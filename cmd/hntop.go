@@ -14,6 +14,7 @@ const (
 
 var (
 	intervals = map[string]int64{
+		"hour":  60 * 60,
 		"day":   60 * 60 * 24,
 		"week":  60 * 60 * 24 * 7,
 		"month": 60 * 60 * 24 * 30,
@@ -34,4 +35,15 @@ func Execute(cCtx *cli.Context) error {
 	_, err = hnclient.Do(req, &h)
 	fmt.Printf("%v", h)
 	return nil
+}
+
+func printKeys(m map[string]int64) []string {
+	keys := make([]string, len(m))
+
+	i := 0
+	for k := range m {
+		keys[i] = k
+		i++
+	}
+	return keys
 }

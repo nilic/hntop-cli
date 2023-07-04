@@ -22,7 +22,7 @@ func main() {
 				Usage:   "interval to show top HN stories from",
 				Action: func(ctx *cli.Context, s string) error {
 					if _, ok := intervals[s]; !ok {
-						return fmt.Errorf("invalid interval value, should be one of %v", intervals)
+						return fmt.Errorf("invalid interval value, should be one of %v", printKeys(intervals))
 					}
 					return nil
 				},
