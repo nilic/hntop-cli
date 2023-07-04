@@ -2,10 +2,7 @@ module github.com/nilic/hntop-cli
 
 go 1.19
 
-require (
-	github.com/urfave/cli/v2 v2.25.7
-	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df
-)
+require github.com/urfave/cli/v2 v2.25.7
 
 require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
