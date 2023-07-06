@@ -23,16 +23,22 @@ var (
 )
 
 func Execute(cCtx *cli.Context) error {
-	var h Hits
 	endTime := time.Now().Unix()
 	startTime := endTime - intervals[cCtx.String("interval")]
 
 	hnclient := NewClient()
-	req, err := hnclient.NewRequest(fmt.Sprintf("search?numericFilters=created_at_i>%d,created_at_i<%d", startTime, endTime))
+
+	query := fmt.Sprintf("search?numericFilters=created_at_i>%d,created_at_i<%d", startTime, endTime)
+	req, err := hnclient.NewRequest(query)
 	if err != nil {
 		return err
 	}
-	_, err = hnclient.Do(req, &h)
+
+	var h Hits
+	_, err = hnclient.Do(req, &h) //TODO
+	if err != nil {
+		return err
+	}
 	fmt.Printf("%v", h)
 	return nil
 }
