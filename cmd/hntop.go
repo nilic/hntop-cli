@@ -35,7 +35,7 @@ func Execute(cCtx *cli.Context) error {
 		return err
 	}
 
-	h.Print()
+	h.PrintHTML()
 
 	return nil
 }
