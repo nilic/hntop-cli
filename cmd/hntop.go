@@ -7,11 +7,6 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-const (
-	itemBaseURL = "https://news.ycombinator.com/item?id="
-	userBaseURL = "https://news.ycombinator.com/user?id="
-)
-
 var (
 	intervals = map[string]int64{
 		"hour":  60 * 60,
@@ -39,7 +34,9 @@ func Execute(cCtx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("%v", h)
+
+	h.Print()
+
 	return nil
 }
 
