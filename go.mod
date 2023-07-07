@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/sersh88/timeago v1.0.0
 	github.com/urfave/cli/v2 v2.25.7
+	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df
 )
 
 require (

@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/urfave/cli/v2"
+	"golang.org/x/exp/slices"
 )
 
 func main() {
@@ -15,21 +17,44 @@ func main() {
 		Usage: "display top Hacker News stories",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:    "interval",
-				Aliases: []string{"i"},
-				EnvVars: []string{appNameUpper + "_INTERVAL"},
-				Value:   "week",
-				Usage:   "interval to show top HN stories from",
-				Action: func(ctx *cli.Context, s string) error {
+				Name:        "interval",
+				Aliases:     []string{"i"},
+				EnvVars:     []string{appNameUpper + "_INTERVAL"},
+				Usage:       fmt.Sprintf("interval to show top HN stories from, one of %v", printKeys(intervals)),
+				DefaultText: "week",
+				Action: func(cCtx *cli.Context, s string) error {
 					if _, ok := intervals[s]; !ok {
 						return fmt.Errorf("invalid interval value, should be one of %v", printKeys(intervals))
 					}
 					return nil
 				},
 			},
-			// TODO: custom interval
+			&cli.StringFlag{
+				Name:    "custom-interval",
+				Aliases: []string{"c"},
+				EnvVars: []string{appNameUpper + "_CUSTOM_INTERVAL"},
+				Usage:   "custom interval to show top HN stories from, eg. 12h, 100d or 6m",
+				Action: func(cCtx *cli.Context, s string) error {
+					if len(s) == 1 {
+						return fmt.Errorf("custom interval too short, needs to be in format <length><interval>, eg. 12h for 12 hours or 6m for 6 months")
+					}
+					length := s[:len(s)-1]
+					if _, err := strconv.Atoi(length); err != nil {
+						return fmt.Errorf("custom interval length error, needs to be in format <length><interval>, eg. 12h for 12 hours or 6m for 6 months")
+					}
+					last := s[len(s)-1:]
+					if !slices.Contains(customIntervalSuffixes, last) {
+						return fmt.Errorf("custom interval unit error, must end in one of %v", customIntervalSuffixes)
+					}
+					return nil
+				},
+			},
 			// TODO: timerange
 			// TODO: send e-mail
+		},
+		CommandNotFound: func(cCtx *cli.Context, command string) { // TODO
+			fmt.Printf("No matching command '%s'", command)
+			cli.ShowAppHelp(cCtx)
 		},
 		Action: func(cCtx *cli.Context) error {
 			err := Execute(cCtx)

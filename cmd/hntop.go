@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/urfave/cli/v2"
@@ -15,11 +16,13 @@ var (
 		"month": 60 * 60 * 24 * 30,
 		"year":  60 * 60 * 24 * 365,
 	}
+	customIntervalSuffixes = []string{"h", "d", "w", "m", "y"}
 )
 
 func Execute(cCtx *cli.Context) error {
 	endTime := time.Now().Unix()
-	startTime := endTime - intervals[cCtx.String("interval")]
+	interval := intervaltoTime(cCtx)
+	startTime := endTime - interval
 
 	hnclient := NewClient()
 
@@ -38,6 +41,34 @@ func Execute(cCtx *cli.Context) error {
 	h.PrintConsole()
 
 	return nil
+}
+
+func intervaltoTime(cCtx *cli.Context) int64 {
+	if cCtx.String("interval") != "" {
+		return intervals[cCtx.String("interval")]
+	}
+
+	if cCtx.String("custom-interval") != "" {
+		s := cCtx.String("custom-interval")
+		l, _ := strconv.Atoi(s[:len(s)-1])
+		length := int64(l)
+		switch unit := s[len(s)-1:]; unit {
+		case "h":
+			return length * intervals["hour"]
+		case "d":
+			return length * intervals["day"]
+		case "w":
+			return length * intervals["week"]
+		case "m":
+			return length * intervals["month"]
+		case "y":
+			return length * intervals["year"]
+		default:
+			return intervals["week"]
+		}
+	}
+
+	return intervals["week"]
 }
 
 func printKeys(m map[string]int64) []string {
