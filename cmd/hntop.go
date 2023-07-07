@@ -30,12 +30,12 @@ func Execute(cCtx *cli.Context) error {
 	}
 
 	var h Hits
-	_, err = hnclient.Do(req, &h) //TODO
+	err = hnclient.Do(req, &h)
 	if err != nil {
 		return err
 	}
 
-	h.PrintHTML()
+	h.PrintConsole()
 
 	return nil
 }

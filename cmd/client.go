@@ -45,10 +45,10 @@ func (c *Client) NewRequest(path string) (*http.Request, error) {
 	return req, nil
 }
 
-func (c *Client) Do(req *http.Request, v interface{}) (*http.Response, error) {
+func (c *Client) Do(req *http.Request, v interface{}) error {
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	defer resp.Body.Close()
@@ -56,8 +56,8 @@ func (c *Client) Do(req *http.Request, v interface{}) (*http.Response, error) {
 	err = json.NewDecoder(resp.Body).Decode(v)
 
 	if err != nil {
-		return nil, fmt.Errorf("error reading response from %s %s: %s", req.Method, req.URL.RequestURI(), err)
+		return fmt.Errorf("error reading response from %s %s: %s", req.Method, req.URL.RequestURI(), err)
 	}
 
-	return resp, nil
+	return nil
 }
