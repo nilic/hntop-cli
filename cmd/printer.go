@@ -12,6 +12,7 @@ const (
 )
 
 func (h *Hits) PrintConsole() {
+	fmt.Println()
 	for i, s := range h.Hits {
 		fmt.Printf("%d. %s\n", i+1, s.Title)
 		fmt.Println(s.getExternalURL())
