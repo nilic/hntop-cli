@@ -13,13 +13,19 @@ const (
 
 func (h *Hits) PrintConsole() {
 	for i, s := range h.Hits {
-		fmt.Printf("%d. %s\n%s\n%s\n%d points by %s, %s | %d comments\n\n", i+1, s.Title, s.getExternalURL(), s.getItemURL(), s.Points, s.Author, timeago.New(s.CreatedAt).Format(), s.NumComments)
+		fmt.Printf("%d. %s\n", i+1, s.Title)
+		fmt.Println(s.getExternalURL())
+		if s.getItemURL() != s.getExternalURL() {
+			fmt.Println(s.getItemURL())
+		}
+		fmt.Printf("%d points by %s %s | %d comments\n\n", s.Points, s.Author, timeago.New(s.CreatedAt).Format(), s.NumComments)
 	}
 }
 
 func (h *Hits) PrintHTML() {
 	for i, s := range h.Hits {
-		fmt.Printf("%d. <a href=\"%s\">%s</a>\n%d points by <a href=\"%s\">%s</a>, %s | <a href=\"%s\">%d comments</a>\n\n", i+1, s.getExternalURL(), s.Title, s.Points, s.getUserURL(), s.Author, timeago.New(s.CreatedAt).Format(), s.getItemURL(), s.NumComments)
+		fmt.Printf("%d. <a href=\"%s\">%s</a>\n", i+1, s.getExternalURL(), s.Title)
+		fmt.Printf("%d points by <a href=\"%s\">%s</a> %s | <a href=\"%s\">%d comments</a>\n\n", s.Points, s.getUserURL(), s.Author, timeago.New(s.CreatedAt).Format(), s.getItemURL(), s.NumComments)
 	}
 }
 
