@@ -41,7 +41,7 @@ func Execute(cCtx *cli.Context) error {
 		return err
 	}
 
-	h.PrintConsole()
+	h.PrintConsole(startTime, endTime)
 
 	return nil
 }

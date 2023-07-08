@@ -20,7 +20,7 @@ func main() {
 				Name:        "interval",
 				Aliases:     []string{"i"},
 				EnvVars:     []string{appNameUpper + "_INTERVAL"},
-				Usage:       fmt.Sprintf("interval to show top HN stories from, one of %v", printKeys(intervals)),
+				Usage:       fmt.Sprintf("interval since current time to show top HN stories from, eg. \"week\" (last week) or \"year\" (last year)\none of %v", printKeys(intervals)),
 				DefaultText: "week",
 				Action: func(cCtx *cli.Context, s string) error {
 					if _, ok := intervals[s]; !ok {
@@ -33,7 +33,7 @@ func main() {
 				Name:    "custom-interval",
 				Aliases: []string{"c"},
 				EnvVars: []string{appNameUpper + "_CUSTOM_INTERVAL"},
-				Usage:   "custom interval to show top HN stories from, eg. 12h, 100d or 6m",
+				Usage:   fmt.Sprintf("custom interval since current time to show top HN stories from, eg. \"12h\" (last 12 hours), \"100d\" (last 100 days) or \"6m\" (last 6 months)\nfollowing units are supported: %v", customIntervalSuffixes),
 				Action: func(cCtx *cli.Context, s string) error {
 					if len(s) == 1 {
 						return fmt.Errorf("custom interval too short, needs to be in format <length><interval>, eg. 12h for 12 hours or 6m for 6 months")
