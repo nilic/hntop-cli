@@ -23,6 +23,9 @@ func Execute(cCtx *cli.Context) error {
 	endTime := time.Now().Unix()
 	interval := intervaltoTime(cCtx)
 	startTime := endTime - interval
+	if startTime < 0 {
+		startTime = 0
+	}
 
 	hnclient := NewClient()
 
