@@ -6,23 +6,23 @@ import (
 )
 
 var intervals = map[string]Interval{
-	"h": Interval{
+	"h": {
 		Unit:       "hour",
 		LengthSecs: 60 * 60,
 	},
-	"d": Interval{
+	"d": {
 		Unit:       "day",
 		LengthSecs: 60 * 60 * 24,
 	},
-	"w": Interval{
+	"w": {
 		Unit:       "week",
 		LengthSecs: 60 * 60 * 24 * 7,
 	},
-	"m": Interval{
+	"m": {
 		Unit:       "month",
 		LengthSecs: 60 * 60 * 24 * 30,
 	},
-	"y": Interval{
+	"y": {
 		Unit:       "year",
 		LengthSecs: 60 * 60 * 24 * 365,
 	},
