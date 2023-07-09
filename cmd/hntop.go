@@ -8,14 +8,23 @@ import (
 )
 
 func Execute(cCtx *cli.Context) error {
-	var startTime, endTime, interval int64
+	var startTime, endTime int64
 	if cCtx.String("last") != "" {
 		endTime = time.Now().Unix()
-		interval = intervaltoSecs(cCtx.String("last"))
+		interval := intervaltoSecs(cCtx.String("last"))
 		startTime = endTime - interval
-	} else { //TODO
+	} else if cCtx.String("from") != "" {
+		if cCtx.String("to") != "" {
+			e, _ := time.Parse(time.RFC3339, cCtx.String("to"))
+			endTime = e.Unix()
+		} else {
+			endTime = time.Now().Unix()
+		}
+		s, _ := time.Parse(time.RFC3339, cCtx.String("from"))
+		startTime = s.Unix()
+	} else { //should print usage information
 		endTime = time.Now().Unix()
-		interval = intervaltoSecs("1w")
+		interval := intervaltoSecs("1w")
 		startTime = endTime - interval
 	}
 

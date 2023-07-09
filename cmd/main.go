@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/urfave/cli/v2"
 	"golang.org/x/exp/slices"
@@ -14,7 +15,7 @@ func main() {
 
 	app := &cli.App{
 		Name:  appName,
-		Usage: "display top Hacker News stories",
+		Usage: "display top Hacker News stories in a given time range",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "last",
@@ -37,7 +38,36 @@ func main() {
 					return nil
 				},
 			},
-			// TODO: timerange
+			&cli.StringFlag{
+				Name:    "from",
+				Aliases: []string{"f"},
+				EnvVars: []string{appNameUpper + "_FROM"},
+				Usage:   "start of the time range to show top HN stories from in RFC3339 format \"yyyy-MM-dd'T'HH:mm:ss'Z'\" (for UTC) or \"yyyy-MM-dd'T'HH:mm:ss±hh:mm\" (for a specific timezone, ±hh:mm is the offset to UTC)\nexamples: \"2006-01-02T15:04:05Z\" (UTC time) and \"2006-01-02T15:04:05+01:00\" (CET)",
+				Action: func(cCtx *cli.Context, s string) error {
+					_, err := time.Parse(time.RFC3339, s)
+					if err != nil {
+						cli.ShowAppHelp(cCtx)
+						fmt.Println()
+						return fmt.Errorf("invalid time format for start of the time range, please use RFC3339 (see help for more information)")
+					}
+					return nil
+				},
+			},
+			&cli.StringFlag{
+				Name:    "to",
+				Aliases: []string{"t"},
+				EnvVars: []string{appNameUpper + "_TO"},
+				Usage:   "end of the time range to show top HN stories from in RFC3339 format \"yyyy-MM-dd'T'HH:mm:ss'Z'\" (for UTC) or \"yyyy-MM-dd'T'HH:mm:ss±hh:mm\" (for a specific timezone, ±hh:mm is the offset to UTC); used in conjuction with --from; if omitted, current time will be used\nexamples: \"2006-01-02T15:04:05Z\" (UTC time) and \"2006-01-02T15:04:05+01:00\" (CET)",
+				Action: func(cCtx *cli.Context, s string) error {
+					_, err := time.Parse(time.RFC3339, s)
+					if err != nil {
+						cli.ShowAppHelp(cCtx)
+						fmt.Println()
+						return fmt.Errorf("invalid time format for end of the time range, please use RFC3339 (see help for more information)")
+					}
+					return nil
+				},
+			},
 			// TODO: send e-mail
 		},
 		CommandNotFound: func(cCtx *cli.Context, command string) { // TODO
