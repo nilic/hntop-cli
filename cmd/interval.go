@@ -122,11 +122,11 @@ func getIntervalUnits(m map[string]Interval) []string {
 }
 
 func printUnits(m map[string]Interval) string {
-	var s string
+	var units string
 
 	for k, v := range m {
-		s += fmt.Sprintf("\"%s\" - %s, ", k, v.Unit)
+		units += fmt.Sprintf("\"%s\" - %s, ", k, v.Unit)
 	}
 
-	return s[:len(s)-2]
+	return units[:len(units)-2]
 }
