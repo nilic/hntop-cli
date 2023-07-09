@@ -12,9 +12,9 @@ const (
 	userBaseURL = "https://news.ycombinator.com/user?id="
 )
 
-func (h *Hits) PrintConsole(startTime, endTime int64) {
+func (h *Hits) PrintConsole(resultCount int, startTime, endTime int64) {
 	fmt.Println()
-	fmt.Printf("Displaying 20 top HN posts from %s to %s\n", (time.Unix(startTime, 0)).Format(time.RFC822), (time.Unix(endTime, 0)).Format(time.RFC822))
+	fmt.Printf("Displaying %d top HN posts from %s to %s\n", resultCount, (time.Unix(startTime, 0)).Format(time.RFC822), (time.Unix(endTime, 0)).Format(time.RFC822))
 	fmt.Println()
 	for i, s := range h.Hits {
 		fmt.Printf("%d. %s\n", i+1, s.Title)

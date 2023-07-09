@@ -8,6 +8,8 @@ import (
 )
 
 func Execute(cCtx *cli.Context) error {
+	resultCount := cCtx.Int("count")
+
 	var startTime, endTime int64
 	if cCtx.String("last") != "" {
 		endTime = time.Now().Unix()
@@ -34,7 +36,7 @@ func Execute(cCtx *cli.Context) error {
 
 	hnclient := NewClient()
 
-	query := fmt.Sprintf("search?numericFilters=created_at_i>%d,created_at_i<%d", startTime, endTime)
+	query := fmt.Sprintf("search?numericFilters=created_at_i>%d,created_at_i<%d&hitsPerPage=%d", startTime, endTime, resultCount)
 	req, err := hnclient.NewRequest(query)
 	if err != nil {
 		return err
@@ -46,7 +48,7 @@ func Execute(cCtx *cli.Context) error {
 		return err
 	}
 
-	h.PrintConsole(startTime, endTime)
+	h.PrintConsole(resultCount, startTime, endTime)
 
 	return nil
 }

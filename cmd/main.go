@@ -11,6 +11,12 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+const (
+	defaultResultCount = 20
+	minResultCount     = 1
+	maxResultCount     = 1000 // maximum number of results returned by Algolia API
+)
+
 func main() {
 
 	app := &cli.App{
@@ -64,6 +70,19 @@ func main() {
 						cli.ShowAppHelp(cCtx)
 						fmt.Println()
 						return fmt.Errorf("invalid time format for end of the time range, please use RFC3339 (see help for more information)")
+					}
+					return nil
+				},
+			},
+			&cli.IntFlag{
+				Name:    "count",
+				Aliases: []string{"c"},
+				EnvVars: []string{appNameUpper + "_COUNT"},
+				Value:   defaultResultCount,
+				Usage:   fmt.Sprintf("number of results to retrieve, must be between %d and %d", minResultCount, maxResultCount),
+				Action: func(cCtx *cli.Context, i int) error {
+					if i < minResultCount || i > maxResultCount {
+						return fmt.Errorf("count should be between %d and %d", minResultCount, maxResultCount)
 					}
 					return nil
 				},
