@@ -87,7 +87,6 @@ func main() {
 					return nil
 				},
 			},
-			// TODO: send e-mail
 		},
 		CommandNotFound: func(cCtx *cli.Context, command string) { // TODO
 			fmt.Printf("No matching command '%s'", command)
