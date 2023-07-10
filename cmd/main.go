@@ -15,7 +15,7 @@ const (
 	defaultResultCount = 20
 	minResultCount     = 1
 	maxResultCount     = 1000                        // maximum number of results returned by Algolia API
-	defaultTag         = "story,poll,show_hn,ask_hn" // return all post types
+	defaultTags        = "story,poll,show_hn,ask_hn" // return all post types
 )
 
 var (
@@ -80,15 +80,15 @@ func main() {
 			&cli.StringFlag{
 				Name:    "tags",
 				Aliases: []string{"t"},
-				EnvVars: []string{appNameUpper + "_TAG"},
-				Value:   defaultTag,
-				Usage:   fmt.Sprintf("filter results by item tag; available tags: %v; multiple tags can be combined with a comma, eg. show_hn,poll", tags),
+				EnvVars: []string{appNameUpper + "_TAGS"},
+				Value:   defaultTags,
+				Usage:   fmt.Sprintf("filter results by post tag; available tags: %v; multiple tags can be combined with a comma, eg. show_hn,poll", tags),
 				Action: func(cCtx *cli.Context, s string) error {
 					// TODO
 					return nil
 				},
 			},
-			&cli.IntFlag{ // TODO
+			&cli.IntFlag{
 				Name:    "count",
 				Aliases: []string{"c"},
 				EnvVars: []string{appNameUpper + "_COUNT"},
@@ -101,7 +101,7 @@ func main() {
 					return nil
 				},
 			},
-			&cli.BoolFlag{ // TODO
+			&cli.BoolFlag{
 				Name:    "front-page",
 				Aliases: []string{"f"},
 				EnvVars: []string{appNameUpper + "_FRONT_PAGE"},
