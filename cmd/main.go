@@ -14,20 +14,25 @@ import (
 const (
 	defaultResultCount = 20
 	minResultCount     = 1
-	maxResultCount     = 1000 // maximum number of results returned by Algolia API
+	maxResultCount     = 1000                        // maximum number of results returned by Algolia API
+	defaultTag         = "story,poll,show_hn,ask_hn" // return all post types
+)
+
+var (
+	tags = []string{"story", "poll", "show_hn", "ask_hn"}
 )
 
 func main() {
 
 	app := &cli.App{
 		Name:  appName,
-		Usage: "display top Hacker News stories in a given time range",
+		Usage: "display top Hacker News posts in a given time range",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "last",
 				Aliases: []string{"l"},
 				EnvVars: []string{appNameUpper + "_LAST"},
-				Usage:   fmt.Sprintf("interval since current time to show top HN stories from, eg. \"12h\" (last 12 hours), \"100d\" (last 100 days), \"6m\" (last 6 months)\nfollowing units are supported: %s", printUnits(intervals)),
+				Usage:   fmt.Sprintf("interval since current time to show top HN posts from, eg. \"12h\" (last 12 hours), \"100d\" (last 100 days), \"6m\" (last 6 months)\nfollowing units are supported: %s", printUnits(intervals)),
 				Action: func(cCtx *cli.Context, s string) error {
 					if len(s) == 1 {
 						return fmt.Errorf("interval too short, needs to be in format <number><unit>, eg. 12h for 12 hours or 6m for 6 months")
@@ -46,9 +51,8 @@ func main() {
 			},
 			&cli.StringFlag{
 				Name:    "from",
-				Aliases: []string{"f"},
 				EnvVars: []string{appNameUpper + "_FROM"},
-				Usage:   "start of the time range to show top HN stories from in RFC3339 format \"yyyy-MM-dd'T'HH:mm:ss'Z'\" (for UTC) or \"yyyy-MM-dd'T'HH:mm:ss±hh:mm\" (for a specific timezone, ±hh:mm is the offset to UTC)\nexamples: \"2006-01-02T15:04:05Z\" (UTC time) and \"2006-01-02T15:04:05+01:00\" (CET)",
+				Usage:   "start of the time range to show top HN posts from in RFC3339 format \"yyyy-MM-dd'T'HH:mm:ss'Z'\" (for UTC) or \"yyyy-MM-dd'T'HH:mm:ss±hh:mm\" (for a specific timezone, ±hh:mm is the offset to UTC)\nexamples: \"2006-01-02T15:04:05Z\" (UTC time) and \"2006-01-02T15:04:05+01:00\" (CET)",
 				Action: func(cCtx *cli.Context, s string) error {
 					_, err := time.Parse(time.RFC3339, s)
 					if err != nil {
@@ -61,9 +65,8 @@ func main() {
 			},
 			&cli.StringFlag{
 				Name:    "to",
-				Aliases: []string{"t"},
 				EnvVars: []string{appNameUpper + "_TO"},
-				Usage:   "end of the time range to show top HN stories from in RFC3339 format \"yyyy-MM-dd'T'HH:mm:ss'Z'\" (for UTC) or \"yyyy-MM-dd'T'HH:mm:ss±hh:mm\" (for a specific timezone, ±hh:mm is the offset to UTC); used in conjuction with --from; if omitted, current time will be used\nexamples: \"2006-01-02T15:04:05Z\" (UTC time) and \"2006-01-02T15:04:05+01:00\" (CET)",
+				Usage:   "end of the time range to show top HN posts from in RFC3339 format \"yyyy-MM-dd'T'HH:mm:ss'Z'\" (for UTC) or \"yyyy-MM-dd'T'HH:mm:ss±hh:mm\" (for a specific timezone, ±hh:mm is the offset to UTC); used in conjuction with --from; if omitted, current time will be used\nexamples: \"2006-01-02T15:04:05Z\" (UTC time) and \"2006-01-02T15:04:05+01:00\" (CET)",
 				Action: func(cCtx *cli.Context, s string) error {
 					_, err := time.Parse(time.RFC3339, s)
 					if err != nil {
@@ -74,7 +77,18 @@ func main() {
 					return nil
 				},
 			},
-			&cli.IntFlag{
+			&cli.StringFlag{
+				Name:    "tags",
+				Aliases: []string{"t"},
+				EnvVars: []string{appNameUpper + "_TAG"},
+				Value:   defaultTag,
+				Usage:   fmt.Sprintf("filter results by item tag; available tags: %v; multiple tags can be combined with a comma, eg. show_hn,poll", tags),
+				Action: func(cCtx *cli.Context, s string) error {
+					// TODO
+					return nil
+				},
+			},
+			&cli.IntFlag{ // TODO
 				Name:    "count",
 				Aliases: []string{"c"},
 				EnvVars: []string{appNameUpper + "_COUNT"},
@@ -86,6 +100,14 @@ func main() {
 					}
 					return nil
 				},
+			},
+			&cli.BoolFlag{ // TODO
+				Name:    "front-page",
+				Aliases: []string{"f"},
+				EnvVars: []string{appNameUpper + "_FRONT_PAGE"},
+				Usage: "display current front page posts; " +
+					"have in mind that the results will be sorted differently than they appear on the front page, by points, then number of comments; " +
+					"if selected, all other flags are ignored",
 			},
 		},
 		CommandNotFound: func(cCtx *cli.Context, command string) { // TODO
