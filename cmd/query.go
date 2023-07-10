@@ -57,6 +57,7 @@ func (q *Query) buildQuery(cCtx *cli.Context) {
 		q.StartTime = 0
 	}
 
+	q.Tags = cCtx.String("tags")
 	q.ResultCount = cCtx.Int("count")
 
 	q.Query = queryPrefix +

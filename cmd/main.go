@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/urfave/cli/v2"
@@ -19,6 +20,8 @@ const (
 )
 
 var (
+	appName       = "hntop"
+	appNameUpper  = strings.ToUpper(appName)
 	availableTags = []string{"story", "poll", "show_hn", "ask_hn"}
 )
 

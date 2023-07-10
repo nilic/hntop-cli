@@ -21,7 +21,7 @@ func NewClient() *Client {
 	baseURL, _ := url.Parse(apiBaseURL)
 	c := &Client{
 		BaseURL:    baseURL,
-		UserAgent:  "hntop/" + getVersion(),
+		UserAgent:  appName + "/" + getVersion(),
 		httpClient: http.DefaultClient,
 	}
 	return c

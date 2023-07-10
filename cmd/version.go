@@ -1,11 +1,7 @@
 package main
 
-import "strings"
-
 var (
-	version      string // set by build process
-	appName      = "hntop"
-	appNameUpper = strings.ToUpper(appName)
+	version string // set by build process
 )
 
 func getVersion() string {
