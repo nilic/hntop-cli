@@ -26,7 +26,7 @@ func main() {
 
 	app := &cli.App{
 		Name:  appName,
-		Usage: "display top Hacker News posts in a given time range",
+		Usage: "display top Hacker News posts",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "last",
