@@ -44,12 +44,12 @@ func main() {
 					}
 					length := s[:len(s)-1]
 					if _, err := strconv.Atoi(length); err != nil {
-						return fmt.Errorf("interval length error, needs to be in format <number><unit>, eg. 12h for 12 hours or 6m for 6 months")
+						return fmt.Errorf("invalid interval length, needs to be in format <number><unit>, eg. 12h for 12 hours or 6m for 6 months")
 					}
 					last := s[len(s)-1:]
 					units := getIntervalUnits(intervals)
 					if !slices.Contains(units, last) {
-						return fmt.Errorf("interval unit error, must end in one of %v", units)
+						return fmt.Errorf("invalid interval unit, must end in one of %v", units)
 					}
 					return nil
 				},
@@ -111,7 +111,7 @@ func main() {
 				Usage:   fmt.Sprintf("number of results to retrieve, must be between %d and %d", minResultCount, maxResultCount),
 				Action: func(cCtx *cli.Context, i int) error {
 					if i < minResultCount || i > maxResultCount {
-						return fmt.Errorf("count should be between %d and %d", minResultCount, maxResultCount)
+						return fmt.Errorf("count must be between %d and %d", minResultCount, maxResultCount)
 					}
 					return nil
 				},

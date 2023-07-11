@@ -30,12 +30,12 @@ func NewClient() *Client {
 func (c *Client) NewRequest(path string) (*http.Request, error) {
 	u, err := c.BaseURL.Parse(path)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parsing API base URL: %w", err)
 	}
 
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("creating API request: %w", err)
 	}
 
 	if c.UserAgent != "" {
@@ -48,7 +48,7 @@ func (c *Client) NewRequest(path string) (*http.Request, error) {
 func (c *Client) Do(req *http.Request, v interface{}) error {
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return err
+		return fmt.Errorf("invoking HN API: %w", err)
 	}
 
 	defer resp.Body.Close()
@@ -56,7 +56,7 @@ func (c *Client) Do(req *http.Request, v interface{}) error {
 	err = json.NewDecoder(resp.Body).Decode(v)
 
 	if err != nil {
-		return fmt.Errorf("error reading response from %s %s: %s", req.Method, req.URL.RequestURI(), err)
+		return fmt.Errorf("reading response from %s %s: %s", req.Method, req.URL.RequestURI(), err)
 	}
 
 	return nil
