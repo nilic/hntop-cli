@@ -5,7 +5,7 @@ import (
 )
 
 func Execute(cCtx *cli.Context) error {
-	q := Query{}
+	q := &Query{}
 	q.buildQuery(cCtx)
 
 	hnclient := NewClient()

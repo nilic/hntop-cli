@@ -12,7 +12,7 @@ const (
 	userBaseURL = "https://news.ycombinator.com/user?id="
 )
 
-func (h *Hits) PrintConsole(q Query) {
+func (h *Hits) PrintConsole(q *Query) {
 	var heading string
 	if q.FrontPage {
 		heading = "Displaying HN posts currently on the front page\n"
