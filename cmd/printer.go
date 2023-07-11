@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/sersh88/timeago"
 )
@@ -11,8 +12,15 @@ const (
 	userBaseURL = "https://news.ycombinator.com/user?id="
 )
 
-func (h *Hits) PrintConsole(heading string) {
+func (h *Hits) PrintConsole(q Query) {
+	var heading string
+	if q.FrontPage {
+		heading = "Displaying HN posts currently on the front page\n"
+	} else {
+		heading = fmt.Sprintf("Displaying %d top HN posts from %s to %s\n", q.ResultCount, (time.Unix(q.StartTime, 0)).Format(time.RFC822), (time.Unix(q.EndTime, 0)).Format(time.RFC822))
+	}
 	fmt.Printf("\n" + heading + "\n")
+
 	for i, s := range h.Hits {
 		fmt.Printf("%d. %s\n", i+1, s.Title)
 		fmt.Println(s.getExternalURL())

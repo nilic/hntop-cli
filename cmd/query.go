@@ -20,7 +20,6 @@ type Query struct {
 	FrontPage   bool
 	Tags        string
 	Query       string
-	Heading     string
 }
 
 func (q *Query) buildQuery(cCtx *cli.Context) {
@@ -30,7 +29,6 @@ func (q *Query) buildQuery(cCtx *cli.Context) {
 		q.Query = queryPrefix +
 			"tags=front_page" +
 			fmt.Sprintf("&hitsPerPage=%d", q.ResultCount)
-		q.Heading = "Displaying HN posts currently on the front page\n"
 		return
 	}
 
@@ -64,5 +62,4 @@ func (q *Query) buildQuery(cCtx *cli.Context) {
 		fmt.Sprintf("numericFilters=created_at_i>%d,created_at_i<%d", q.StartTime, q.EndTime) +
 		fmt.Sprintf("&hitsPerPage=%d", q.ResultCount) +
 		fmt.Sprintf("&tags=(%s)", q.Tags)
-	q.Heading = fmt.Sprintf("Displaying %d top HN posts from %s to %s\n", q.ResultCount, (time.Unix(q.StartTime, 0)).Format(time.RFC822), (time.Unix(q.EndTime, 0)).Format(time.RFC822))
 }

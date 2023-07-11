@@ -20,7 +20,7 @@ func Execute(cCtx *cli.Context) error {
 		return err
 	}
 
-	h.PrintConsole(q.Heading)
+	h.PrintConsole(q)
 
 	return nil
 }
