@@ -94,7 +94,12 @@ func main() {
 				Value:   defaultTags,
 				Usage:   fmt.Sprintf("filter results by post tag; available tags: %v; multiple tags can be combined with a comma, eg. show_hn,poll", availableTags),
 				Action: func(cCtx *cli.Context, s string) error {
-					// TODO
+					tags := strings.Split(s, ",")
+					for _, t := range tags {
+						if !slices.Contains(availableTags, t) {
+							return fmt.Errorf("invalid tag value \"%s\", available tags: %v", t, availableTags)
+						}
+					}
 					return nil
 				},
 			},
