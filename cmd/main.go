@@ -121,7 +121,7 @@ func main() {
 				Aliases: []string{"f"},
 				EnvVars: []string{appNameUpper + "_FRONT_PAGE"},
 				Usage: "display current front page posts; " +
-					"have in mind that the results will be sorted differently than they appear on the front page, by points, then number of comments; " +
+					"have in mind that the results will be sorted by points, then number of comments, which differs from the front page sorting; " +
 					"if selected, all other flags are ignored",
 			},
 		},
