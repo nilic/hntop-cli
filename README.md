@@ -7,6 +7,8 @@ Relies on [HN Search API](https://hn.algolia.com/api).
 
 Just grab the archive for your OS and platform from the [Releases](https://github.com/nilic/hntop-cli/releases) page and extract it somewhere. Optionally, you can add `hntop` to your [$PATH](https://gist.github.com/nex3/c395b2f8fd4b02068be37c961301caa7).
 
+`hntop` is also available as a [container image](https://github.com/nilic/hntop-cli/pkgs/container/hntop-cli).
+
 ## Usage
 
 ```
@@ -36,9 +38,9 @@ GLOBAL OPTIONS:
 
 ## Examples
 
-### Get top HN posts from last X days, week, months or years
+### Get top HN posts from last X hours, days, weeks, months or years
 
-Interval to show posts from is defined as `<length><unit>` since current time, eg. "12h" for posts from last 12 hours or "6m" for posts from last 6 months.
+Interval to show posts from is defined as `<length><unit>` since current time, eg. `12h` for posts from last 12 hours or `6m` for posts from last 6 months.
 
 Available units: `h` - hour, `d` - day, `w` - week, `m` - month, `y` - year.
 
@@ -59,7 +61,7 @@ hntop -l 50y
 
 ### Get top HN posts in a custom timerange
 
-Custom timerange can be defined using the RFC3339 format, ie. `yyyy-MM-dd'T'HH:mm:ss'Z'` (for UTC) or `yyyy-MM-dd'T'HH:mm:ss±hh:mm` (for a specific timezone, where ±hh:mm is the offset to UTC).
+Custom timerange can be defined using the RFC3339 format, ie. `yyyy-MM-dd'T'HH:mm:ss'Z'` for UTC or `yyyy-MM-dd'T'HH:mm:ss±hh:mm` for a specific timezone, where ±hh:mm is the offset to UTC.
 
 Examples: `2006-01-02T15:04:05Z` is 2 Jan 2006 15:40:05 UTC, while `2017-10-12T20:05:09+01:00` is 12 Oct 2017 20:05:09 CET.
 
