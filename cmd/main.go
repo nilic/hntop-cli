@@ -118,6 +118,66 @@ func main() {
 				EnvVars: []string{appNameUpper + "_FRONT_PAGE"},
 				Usage:   "Display current front page posts. If selected, all other flags are ignored.",
 			},
+			&cli.StringFlag{
+				Name:     "mail-from",
+				EnvVars:  []string{appNameUpper + "_MAIL_FROM"},
+				Usage:    "Mail From address.",
+				Category: "Mail options:",
+			},
+			&cli.StringFlag{
+				Name:     "mail-to",
+				EnvVars:  []string{appNameUpper + "_MAIL_TO"},
+				Usage:    "Mail To address.",
+				Category: "Mail options:",
+			},
+			&cli.StringFlag{
+				Name:     "mail-server",
+				EnvVars:  []string{appNameUpper + "_MAIL_SERVER"},
+				Usage:    "Mail server.",
+				Category: "Mail options:",
+			},
+			&cli.IntFlag{
+				Name:     "mail-port",
+				EnvVars:  []string{appNameUpper + "_MAIL_PORT"},
+				Usage:    "Mail server port.",
+				Category: "Mail options:",
+			},
+			&cli.StringFlag{
+				Name:     "mail-username",
+				EnvVars:  []string{appNameUpper + "_MAIL_USERNAME"},
+				Usage:    "Mail server username.",
+				Category: "Mail options:",
+			},
+			&cli.StringFlag{
+				Name:     "mail-password",
+				EnvVars:  []string{appNameUpper + "_MAIL_PASSWORD"},
+				Usage:    "Mail server password.",
+				Category: "Mail options:",
+			},
+			&cli.StringFlag{
+				Name:     "mail-auth",
+				EnvVars:  []string{appNameUpper + "_MAIL_AUTH"},
+				Usage:    fmt.Sprintf("Mail server authentication mechanism, one of: %v.", availableMailAuthMechanisms),
+				Category: "Mail options:",
+				Action: func(cCtx *cli.Context, s string) error {
+					if !slices.Contains(availableMailAuthMechanisms, s) {
+						return fmt.Errorf("invalid mail server authentication mechanism, must be one of %v", availableMailAuthMechanisms)
+					}
+					return nil
+				},
+			},
+			&cli.StringFlag{
+				Name:     "mail-tls",
+				EnvVars:  []string{appNameUpper + "_MAIL_TLS"},
+				Usage:    fmt.Sprintf("Mail TLS policy, one of: %v.", availableMailTLSPolicies),
+				Category: "Mail options:",
+				Action: func(cCtx *cli.Context, s string) error {
+					if !slices.Contains(availableMailTLSPolicies, s) {
+						return fmt.Errorf("invalid mail TLS policy, must be one of %v", availableMailTLSPolicies)
+					}
+					return nil
+				},
+			},
 		},
 		CommandNotFound: func(cCtx *cli.Context, command string) { // TODO
 			fmt.Printf("No matching command '%s'", command)
