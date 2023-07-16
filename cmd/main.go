@@ -36,7 +36,6 @@ func main() {
 				Aliases: []string{"l"},
 				EnvVars: []string{appNameUpper + "_LAST"},
 				Usage:   "Interval since current time to show top HN posts from, eg. \"12h\" (last 12 hours), \"6m\" (last 6 months).",
-				// "following units are supported: %s", printUnits(intervals)),
 				Action: func(cCtx *cli.Context, s string) error {
 					if len(s) == 1 {
 						return fmt.Errorf("interval too short, needs to be in format <number><unit>, eg. 12h for 12 hours or 6m for 6 months")
@@ -56,9 +55,7 @@ func main() {
 			&cli.StringFlag{
 				Name:    "from",
 				EnvVars: []string{appNameUpper + "_FROM"},
-				Usage:   "Start of the time range to show top HN posts from in RFC3339 format.", // +
-				// "\"yyyy-MM-dd'T'HH:mm:ss'Z'\" (for UTC) or \"yyyy-MM-dd'T'HH:mm:ss±hh:mm\" (for a specific timezone, ±hh:mm is the offset to UTC)\n" +
-				// "examples: \"2006-01-02T15:04:05Z\" (UTC time) and \"2006-01-02T15:04:05+01:00\" (CET)",
+				Usage:   "Start of the time range to show top HN posts from in RFC3339 format.",
 				Action: func(cCtx *cli.Context, s string) error {
 					_, err := time.Parse(time.RFC3339, s)
 					if err != nil {
@@ -71,9 +68,6 @@ func main() {
 				Name:    "to",
 				EnvVars: []string{appNameUpper + "_TO"},
 				Usage:   "End of the time range to show top HN posts from in RFC3339 format. Used in conjuction with --from. If omitted, current time will be used.",
-				// "\"yyyy-MM-dd'T'HH:mm:ss'Z'\" (for UTC) or \"yyyy-MM-dd'T'HH:mm:ss±hh:mm\" (for a specific timezone, ±hh:mm is the offset to UTC); " +
-				// "" +
-				// "examples: \"2006-01-02T15:04:05Z\" (UTC time) and \"2006-01-02T15:04:05+01:00\" (CET)",
 				Action: func(cCtx *cli.Context, s string) error {
 					if cCtx.String("from") == "" {
 						return fmt.Errorf("start of the time range missing, please use --from <value in RFC3339> to specify")
@@ -119,8 +113,6 @@ func main() {
 				Aliases: []string{"f"},
 				EnvVars: []string{appNameUpper + "_FRONT_PAGE"},
 				Usage:   "Display current front page posts. If selected, all other flags are ignored.",
-				// "have in mind that the results will be sorted by points, then number of comments, which differs from the front page sorting; " +
-				// "if selected, all other flags are ignored",
 			},
 		},
 		CommandNotFound: func(cCtx *cli.Context, command string) { // TODO
