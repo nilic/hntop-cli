@@ -72,9 +72,13 @@ func main() {
 					if cCtx.String("from") == "" {
 						return fmt.Errorf("start of the time range missing, please use --from <value in RFC3339> to specify")
 					}
-					_, err := time.Parse(time.RFC3339, s)
+					to, err := time.Parse(time.RFC3339, s)
 					if err != nil {
 						return fmt.Errorf("invalid time format for end of the time range, please use RFC3339")
+					}
+					from, _ := time.Parse(time.RFC3339, cCtx.String("from"))
+					if !to.After(from) {
+						return fmt.Errorf("end of the time range should be later than start of the time range")
 					}
 					return nil
 				},
