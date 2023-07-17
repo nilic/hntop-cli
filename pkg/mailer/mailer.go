@@ -35,7 +35,8 @@ type MailConfig struct {
 	Tls         mail.TLSPolicy    // default
 }
 
-func (mc *MailConfig) NewMailConfig(from, to, subject, contentType, body, server string, port int, username, password, auth, tls string) error {
+func NewMailConfig(from, to, subject, contentType, body, server string, port int, username, password, auth, tls string) (*MailConfig, error) {
+	var mc *MailConfig
 	mc.From = from
 	mc.To = to
 	mc.Subject = subject
@@ -46,7 +47,7 @@ func (mc *MailConfig) NewMailConfig(from, to, subject, contentType, body, server
 	case "text":
 		mc.ContentType = mail.TypeTextPlain
 	default:
-		return fmt.Errorf("unknown mail content type: %s", contentType)
+		return nil, fmt.Errorf("unknown mail content type: %s", contentType)
 	}
 
 	mc.Body = body
@@ -65,7 +66,7 @@ func (mc *MailConfig) NewMailConfig(from, to, subject, contentType, body, server
 	case "xoauth2":
 		mc.Auth = mail.SMTPAuthXOAUTH2
 	default:
-		return fmt.Errorf("unknown mail authentication mechanism: %s", auth)
+		return nil, fmt.Errorf("unknown mail authentication mechanism: %s", auth)
 	}
 
 	switch tls {
@@ -76,27 +77,28 @@ func (mc *MailConfig) NewMailConfig(from, to, subject, contentType, body, server
 	case "notls":
 		mc.Tls = mail.NoTLS
 	default:
-		return fmt.Errorf("unknown mail TLS policy: %s", tls)
+		return nil, fmt.Errorf("unknown mail TLS policy: %s", tls)
 	}
 
-	return nil
+	return mc, nil
 }
 
-func (m *Mailer) NewMailer(mc *MailConfig) error {
+func NewMailer(mc *MailConfig) (*Mailer, error) {
+	var m *Mailer
 	m.Config = mc
 
 	m.Msg = mail.NewMsg()
 	if err := m.Msg.From(m.Config.From); err != nil {
-		return fmt.Errorf("failed to set mail From address: %s", err)
+		return nil, fmt.Errorf("failed to set mail From address: %s", err)
 	}
 	if err := m.Msg.To(m.Config.To); err != nil {
-		return fmt.Errorf("failed to set mail To address: %s", err)
+		return nil, fmt.Errorf("failed to set mail To address: %s", err)
 	}
 
 	m.Msg.Subject(m.Config.Subject)
 	m.Msg.SetBodyString(m.Config.ContentType, m.Config.Body)
 
-	return nil
+	return m, nil
 }
 
 func (m *Mailer) Send() error {
