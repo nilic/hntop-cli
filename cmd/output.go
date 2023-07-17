@@ -21,7 +21,10 @@ func (h *Hits) Output(cCtx *cli.Context, q *Query) error {
 		h.ToList(q)
 	case "mail":
 		body := h.ToHTML(q)
-		h.ToMail(cCtx, body)
+		err := h.ToMail(cCtx, body)
+		if err != nil {
+			return fmt.Errorf("output to mail error: %w", err)
+		}
 	default:
 		return fmt.Errorf("unknown output type: %s", cCtx.String("output"))
 	}
@@ -80,13 +83,19 @@ func (h *Hits) ToList(q *Query) {
 func (h *Hits) ToHTML(q *Query) string {
 	var out string
 	if q.FrontPage {
-		out = "HN posts currently on the front page\n\n"
+		out = "HN posts currently on the front page<br><br>"
 	} else {
-		out = fmt.Sprintf("Top %d HN posts from %s to %s\n\n", q.ResultCount, (time.Unix(q.StartTime, 0)).Format(time.RFC822), (time.Unix(q.EndTime, 0)).Format(time.RFC822))
+		out = fmt.Sprintf("Top %d HN posts from %s to %s<br><br>", q.ResultCount, (time.Unix(q.StartTime, 0)).Format(time.RFC822), (time.Unix(q.EndTime, 0)).Format(time.RFC822))
 	}
 	for i, s := range h.Hits {
-		out += fmt.Sprintf("%d. <a href=\"%s\">%s</a>\n", i+1, s.getExternalURL(), s.Title)
-		out += fmt.Sprintf("%d points by <a href=\"%s\">%s</a> %s | <a href=\"%s\">%d comments</a>\n\n", s.Points, s.getUserURL(), s.Author, timeago.New(s.CreatedAt).Format(), s.getItemURL(), s.NumComments)
+		out += fmt.Sprintf("%d. <a href=\"%s\">%s</a><br>", i+1, s.getExternalURL(), s.Title)
+		out += fmt.Sprintf("%d points by <a href=\"%s\">%s</a> %s | <a href=\"%s\">%d comments</a><br><br>",
+			s.Points,
+			s.getUserURL(),
+			s.Author,
+			timeago.New(s.CreatedAt).Format(),
+			s.getItemURL(),
+			s.NumComments)
 	}
 
 	return out

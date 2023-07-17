@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	DefaultAuthMechanism = "login"
-	DefaultTLSPolicy     = "mandatory"
+	DefaultAuthMechanism = mail.SMTPAuthLogin
+	DefaultTLSPolicy     = mail.TLSMandatory
+	DefaultPort          = 587
 )
 
 var (
@@ -52,7 +53,13 @@ func NewMailConfig(from, to, subject, contentType, body, server string, port int
 
 	mc.Body = body
 	mc.Server = server
-	mc.Port = port
+
+	if port != 0 {
+		mc.Port = port
+	} else {
+		mc.Port = DefaultPort
+	}
+
 	mc.Username = username
 	mc.Password = password
 
@@ -66,7 +73,7 @@ func NewMailConfig(from, to, subject, contentType, body, server string, port int
 	case "xoauth2":
 		mc.Auth = mail.SMTPAuthXOAUTH2
 	default:
-		return nil, fmt.Errorf("unknown mail authentication mechanism: %s", auth)
+		mc.Auth = DefaultAuthMechanism
 	}
 
 	switch tls {
@@ -77,7 +84,7 @@ func NewMailConfig(from, to, subject, contentType, body, server string, port int
 	case "notls":
 		mc.Tls = mail.NoTLS
 	default:
-		return nil, fmt.Errorf("unknown mail TLS policy: %s", tls)
+		mc.Tls = DefaultTLSPolicy
 	}
 
 	return &mc, nil
@@ -108,9 +115,12 @@ func (m *Mailer) Send() error {
 		return fmt.Errorf("failed to create mail client: %s", err)
 	}
 
+	fmt.Printf("Sending mail to %s\n", m.Config.To)
+
 	if err := c.DialAndSend(m.Msg); err != nil {
 		return fmt.Errorf("failed to send mail: %s", err)
 	}
 
+	fmt.Print("Done.\n")
 	return nil
 }

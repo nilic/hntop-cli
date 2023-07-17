@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/mail"
 	"os"
 	"strconv"
 	"strings"
@@ -145,12 +146,24 @@ func main() {
 				EnvVars:  []string{appNameUpper + "_MAIL_FROM"},
 				Usage:    "Mail From address.",
 				Category: "Mail options:",
+				Action: func(cCtx *cli.Context, s string) error {
+					if _, err := mail.ParseAddress(s); err != nil {
+						return fmt.Errorf("invalid mail From address")
+					}
+					return nil
+				},
 			},
 			&cli.StringFlag{
 				Name:     "mail-to",
 				EnvVars:  []string{appNameUpper + "_MAIL_TO"},
 				Usage:    "Mail To address.",
 				Category: "Mail options:",
+				Action: func(cCtx *cli.Context, s string) error {
+					if _, err := mail.ParseAddress(s); err != nil {
+						return fmt.Errorf("invalid mail To address")
+					}
+					return nil
+				},
 			},
 			&cli.StringFlag{
 				Name:     "mail-server",
@@ -159,10 +172,17 @@ func main() {
 				Category: "Mail options:",
 			},
 			&cli.IntFlag{
-				Name:     "mail-port",
-				EnvVars:  []string{appNameUpper + "_MAIL_PORT"},
-				Usage:    "Mail server port.",
-				Category: "Mail options:",
+				Name:        "mail-port",
+				EnvVars:     []string{appNameUpper + "_MAIL_PORT"},
+				Usage:       "Mail server port.",
+				DefaultText: strconv.Itoa(mailer.DefaultPort),
+				Category:    "Mail options:",
+				Action: func(ctx *cli.Context, v int) error {
+					if v < 0 || v > 65535 {
+						return fmt.Errorf("mail server port value %v out of range [0-65535]", v)
+					}
+					return nil
+				},
 			},
 			&cli.StringFlag{
 				Name:     "mail-username",
@@ -177,10 +197,11 @@ func main() {
 				Category: "Mail options:",
 			},
 			&cli.StringFlag{
-				Name:     "mail-auth",
-				EnvVars:  []string{appNameUpper + "_MAIL_AUTH"},
-				Usage:    fmt.Sprintf("Mail server authentication mechanism, one of: %v.", mailer.AvailableAuthMechanisms),
-				Category: "Mail options:",
+				Name:        "mail-auth",
+				EnvVars:     []string{appNameUpper + "_MAIL_AUTH"},
+				Usage:       fmt.Sprintf("Mail server authentication mechanism, one of: %v.", mailer.AvailableAuthMechanisms),
+				DefaultText: "login",
+				Category:    "Mail options:",
 				Action: func(cCtx *cli.Context, s string) error {
 					if !slices.Contains(mailer.AvailableAuthMechanisms, s) {
 						return fmt.Errorf("invalid mail server authentication mechanism, must be one of %v", mailer.AvailableAuthMechanisms)
@@ -191,12 +212,12 @@ func main() {
 			&cli.StringFlag{
 				Name:        "mail-tls",
 				EnvVars:     []string{appNameUpper + "_MAIL_TLS"},
-				Usage:       fmt.Sprintf("Mail TLS policy, one of: %v.", mailer.AvailableTLSPolicies),
+				Usage:       fmt.Sprintf("Mail server TLS policy, one of: %v.", mailer.AvailableTLSPolicies),
 				DefaultText: "mandatory",
 				Category:    "Mail options:",
 				Action: func(cCtx *cli.Context, s string) error {
 					if !slices.Contains(mailer.AvailableTLSPolicies, s) {
-						return fmt.Errorf("invalid mail TLS policy, must be one of %v", mailer.AvailableTLSPolicies)
+						return fmt.Errorf("invalid mail server TLS policy, must be one of %v", mailer.AvailableTLSPolicies)
 					}
 					return nil
 				},
