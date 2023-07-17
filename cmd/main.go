@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/nilic/hntop-cli/pkg/mailer"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/exp/slices"
 )
@@ -157,23 +158,24 @@ func main() {
 			&cli.StringFlag{
 				Name:     "mail-auth",
 				EnvVars:  []string{appNameUpper + "_MAIL_AUTH"},
-				Usage:    fmt.Sprintf("Mail server authentication mechanism, one of: %v.", availableMailAuthMechanisms),
+				Usage:    fmt.Sprintf("Mail server authentication mechanism, one of: %v.", mailer.AvailableMailAuthMechanisms),
 				Category: "Mail options:",
 				Action: func(cCtx *cli.Context, s string) error {
-					if !slices.Contains(availableMailAuthMechanisms, s) {
-						return fmt.Errorf("invalid mail server authentication mechanism, must be one of %v", availableMailAuthMechanisms)
+					if !slices.Contains(mailer.AvailableMailAuthMechanisms, s) {
+						return fmt.Errorf("invalid mail server authentication mechanism, must be one of %v", mailer.AvailableMailAuthMechanisms)
 					}
 					return nil
 				},
 			},
 			&cli.StringFlag{
-				Name:     "mail-tls",
-				EnvVars:  []string{appNameUpper + "_MAIL_TLS"},
-				Usage:    fmt.Sprintf("Mail TLS policy, one of: %v.", availableMailTLSPolicies),
-				Category: "Mail options:",
+				Name:        "mail-tls",
+				EnvVars:     []string{appNameUpper + "_MAIL_TLS"},
+				Usage:       fmt.Sprintf("Mail TLS policy, one of: %v.", mailer.AvailableMailTLSPolicies),
+				DefaultText: "mandatory",
+				Category:    "Mail options:",
 				Action: func(cCtx *cli.Context, s string) error {
-					if !slices.Contains(availableMailTLSPolicies, s) {
-						return fmt.Errorf("invalid mail TLS policy, must be one of %v", availableMailTLSPolicies)
+					if !slices.Contains(mailer.AvailableMailTLSPolicies, s) {
+						return fmt.Errorf("invalid mail TLS policy, must be one of %v", mailer.AvailableMailTLSPolicies)
 					}
 					return nil
 				},
