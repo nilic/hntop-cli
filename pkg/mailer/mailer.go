@@ -38,8 +38,19 @@ type MailConfig struct {
 
 func NewMailConfig(from, to, subject, contentType, body, server string, port int, username, password, auth, tls string) (*MailConfig, error) {
 	var mc MailConfig
-	mc.From = from
-	mc.To = to
+
+	if from != "" {
+		mc.From = from
+	} else {
+		return nil, fmt.Errorf("mail From address is required")
+	}
+
+	if to != "" {
+		mc.To = to
+	} else {
+		return nil, fmt.Errorf("mail To address is required")
+	}
+
 	mc.Subject = subject
 
 	switch contentType {
@@ -115,7 +126,7 @@ func (m *Mailer) Send() error {
 		return fmt.Errorf("failed to create mail client: %s", err)
 	}
 
-	fmt.Printf("Sending mail to %s\n", m.Config.To)
+	fmt.Printf("Sending mail to %s.. ", m.Config.To)
 
 	if err := c.DialAndSend(m.Msg); err != nil {
 		return fmt.Errorf("failed to send mail: %s", err)
