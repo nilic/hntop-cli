@@ -21,9 +21,10 @@ const (
 )
 
 var (
-	appName       = "hntop"
-	appNameUpper  = strings.ToUpper(appName)
-	availableTags = []string{"story", "poll", "show_hn", "ask_hn"}
+	appName          = "hntop"
+	appNameUpper     = strings.ToUpper(appName)
+	availableTags    = []string{"story", "poll", "show_hn", "ask_hn"}
+	availableOutputs = []string{"list", "mail"}
 )
 
 func main() {
@@ -120,6 +121,19 @@ func main() {
 				Usage:   "Display current front page posts. If selected, all other flags are ignored.",
 			},
 			&cli.StringFlag{
+				Name:    "output",
+				Aliases: []string{"o"},
+				EnvVars: []string{appNameUpper + "_OUTPUT"},
+				Value:   "list",
+				Usage:   fmt.Sprintf("Output format, one of: %v.", availableOutputs),
+				Action: func(cCtx *cli.Context, s string) error {
+					if !slices.Contains(availableOutputs, s) {
+						return fmt.Errorf("invalid output format, must be one of %v", availableOutputs)
+					}
+					return nil
+				},
+			},
+			&cli.StringFlag{
 				Name:     "mail-from",
 				EnvVars:  []string{appNameUpper + "_MAIL_FROM"},
 				Usage:    "Mail From address.",
@@ -180,10 +194,6 @@ func main() {
 					return nil
 				},
 			},
-		},
-		CommandNotFound: func(cCtx *cli.Context, command string) { // TODO
-			fmt.Printf("No matching command '%s'", command)
-			cli.ShowAppHelp(cCtx)
 		},
 		Action: func(cCtx *cli.Context) error {
 			err := Execute(cCtx)

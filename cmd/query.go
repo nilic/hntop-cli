@@ -22,14 +22,15 @@ type Query struct {
 	Query       string
 }
 
-func (q *Query) buildQuery(cCtx *cli.Context) {
+func buildQuery(cCtx *cli.Context) *Query {
+	var q Query
 	if cCtx.Bool("front-page") {
 		q.FrontPage = true
 		q.ResultCount = frontPagePostCount
 		q.Query = queryPrefix +
 			"tags=front_page" +
 			fmt.Sprintf("&hitsPerPage=%d", q.ResultCount)
-		return
+		return &q
 	}
 
 	if cCtx.String("last") != "" {
@@ -62,4 +63,6 @@ func (q *Query) buildQuery(cCtx *cli.Context) {
 		fmt.Sprintf("numericFilters=created_at_i>%d,created_at_i<%d", q.StartTime, q.EndTime) +
 		fmt.Sprintf("&hitsPerPage=%d", q.ResultCount) +
 		fmt.Sprintf("&tags=(%s)", q.Tags)
+
+	return &q
 }

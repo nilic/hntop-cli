@@ -36,7 +36,7 @@ type MailConfig struct {
 }
 
 func NewMailConfig(from, to, subject, contentType, body, server string, port int, username, password, auth, tls string) (*MailConfig, error) {
-	var mc *MailConfig
+	var mc MailConfig
 	mc.From = from
 	mc.To = to
 	mc.Subject = subject
@@ -80,11 +80,11 @@ func NewMailConfig(from, to, subject, contentType, body, server string, port int
 		return nil, fmt.Errorf("unknown mail TLS policy: %s", tls)
 	}
 
-	return mc, nil
+	return &mc, nil
 }
 
 func NewMailer(mc *MailConfig) (*Mailer, error) {
-	var m *Mailer
+	var m Mailer
 	m.Config = mc
 
 	m.Msg = mail.NewMsg()
@@ -98,7 +98,7 @@ func NewMailer(mc *MailConfig) (*Mailer, error) {
 	m.Msg.Subject(m.Config.Subject)
 	m.Msg.SetBodyString(m.Config.ContentType, m.Config.Body)
 
-	return m, nil
+	return &m, nil
 }
 
 func (m *Mailer) Send() error {
