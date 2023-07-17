@@ -32,8 +32,8 @@ type MailConfig struct {
 	Port        int
 	Username    string
 	Password    string
-	Auth        mail.SMTPAuthType //default?
-	Tls         mail.TLSPolicy    // default
+	Auth        mail.SMTPAuthType
+	Tls         mail.TLSPolicy
 }
 
 func NewMailConfig(from, to, subject, contentType, body, server string, port int, username, password, auth, tls string) (*MailConfig, error) {
