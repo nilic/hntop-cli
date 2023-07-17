@@ -158,11 +158,11 @@ func main() {
 			&cli.StringFlag{
 				Name:     "mail-auth",
 				EnvVars:  []string{appNameUpper + "_MAIL_AUTH"},
-				Usage:    fmt.Sprintf("Mail server authentication mechanism, one of: %v.", mailer.AvailableMailAuthMechanisms),
+				Usage:    fmt.Sprintf("Mail server authentication mechanism, one of: %v.", mailer.AvailableAuthMechanisms),
 				Category: "Mail options:",
 				Action: func(cCtx *cli.Context, s string) error {
-					if !slices.Contains(mailer.AvailableMailAuthMechanisms, s) {
-						return fmt.Errorf("invalid mail server authentication mechanism, must be one of %v", mailer.AvailableMailAuthMechanisms)
+					if !slices.Contains(mailer.AvailableAuthMechanisms, s) {
+						return fmt.Errorf("invalid mail server authentication mechanism, must be one of %v", mailer.AvailableAuthMechanisms)
 					}
 					return nil
 				},
@@ -170,12 +170,12 @@ func main() {
 			&cli.StringFlag{
 				Name:        "mail-tls",
 				EnvVars:     []string{appNameUpper + "_MAIL_TLS"},
-				Usage:       fmt.Sprintf("Mail TLS policy, one of: %v.", mailer.AvailableMailTLSPolicies),
+				Usage:       fmt.Sprintf("Mail TLS policy, one of: %v.", mailer.AvailableTLSPolicies),
 				DefaultText: "mandatory",
 				Category:    "Mail options:",
 				Action: func(cCtx *cli.Context, s string) error {
-					if !slices.Contains(mailer.AvailableMailTLSPolicies, s) {
-						return fmt.Errorf("invalid mail TLS policy, must be one of %v", mailer.AvailableMailTLSPolicies)
+					if !slices.Contains(mailer.AvailableTLSPolicies, s) {
+						return fmt.Errorf("invalid mail TLS policy, must be one of %v", mailer.AvailableTLSPolicies)
 					}
 					return nil
 				},

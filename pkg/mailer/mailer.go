@@ -7,13 +7,13 @@ import (
 )
 
 const (
-	DefaultMailAuthMechanism = "login"
-	DefaultMailTLSPolicy     = "mandatory"
+	DefaultAuthMechanism = "login"
+	DefaultTLSPolicy     = "mandatory"
 )
 
 var (
-	AvailableMailAuthMechanisms = []string{"login", "plain", "crammd5", "xoauth2"}
-	AvailableMailTLSPolicies    = []string{"mandatory", "opportunistic", "notls"}
+	AvailableAuthMechanisms = []string{"login", "plain", "crammd5", "xoauth2"}
+	AvailableTLSPolicies    = []string{"mandatory", "opportunistic", "notls"}
 )
 
 type Mailer struct {
