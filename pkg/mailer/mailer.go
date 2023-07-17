@@ -94,11 +94,7 @@ func (m *Mailer) NewMailer(mc *MailConfig) error {
 	}
 
 	m.Msg.Subject(m.Config.Subject)
-	if m.Config.ContentType == mail.TypeTextHTML {
-		m.Msg.SetBodyString(m.Config.ContentType, m.Config.Body) // TODO HTML
-	} else {
-		m.Msg.SetBodyString(m.Config.ContentType, m.Config.Body) // TODO text
-	}
+	m.Msg.SetBodyString(m.Config.ContentType, m.Config.Body)
 
 	return nil
 }
