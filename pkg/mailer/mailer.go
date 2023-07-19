@@ -63,7 +63,12 @@ func NewMailConfig(from, to, subject, contentType, body, server string, port int
 	}
 
 	mc.Body = body
-	mc.Server = server
+
+	if server != "" {
+		mc.Server = server
+	} else {
+		return nil, fmt.Errorf("mail server DNS or IP is required")
+	}
 
 	if port != 0 {
 		mc.Port = port
