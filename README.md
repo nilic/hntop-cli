@@ -26,14 +26,35 @@ COMMANDS:
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --last value, -l value   Interval since current time to show top HN posts from, eg. "12h" (last 12 hours), "6m" (last 6 months). [$HNTOP_LAST]
-   --from value             Start of the time range to show top HN posts from in RFC3339 format. [$HNTOP_FROM]
-   --to value               End of the time range to show top HN posts from in RFC3339 format. Used in conjuction with --from. If omitted, current time will be used. [$HNTOP_TO]
-   --tags value, -t value   Filter results by post tag. Available tags: [story poll show_hn ask_hn]. (default: "story,poll,show_hn,ask_hn") [$HNTOP_TAGS]
+   --help, -h     show help
+   --version, -v  print the version
+
+   Mail options:
+
+   --mail-auth value      Mail server authentication mechanism, one of: [login plain crammd5 xoauth2]. (default: login) [$HNTOP_MAIL_AUTH]
+   --mail-from value      Mail From address. [$HNTOP_MAIL_FROM]
+   --mail-password value  Mail server password. [$HNTOP_MAIL_PASSWORD]
+   --mail-port value      Mail server port. (default: 587) [$HNTOP_MAIL_PORT]
+   --mail-server value    Mail server. [$HNTOP_MAIL_SERVER]
+   --mail-tls value       Mail server TLS policy, one of: [mandatory opportunistic notls]. (default: mandatory) [$HNTOP_MAIL_TLS]
+   --mail-to value        Mail To address. [$HNTOP_MAIL_TO]
+   --mail-username value  Mail server username. [$HNTOP_MAIL_USERNAME]
+
+   Miscellaneous:
+
+   --output value, -o value  Output format, one of: [list mail]. (default: "list") [$HNTOP_OUTPUT]
+
+   Search options:
+
    --count value, -c value  Number of results to retrieve, must be between 1 and 1000. (default: 20) [$HNTOP_COUNT]
    --front-page, -f         Display current front page posts. If selected, all other flags are ignored. (default: false) [$HNTOP_FRONT_PAGE]
-   --help, -h               show help
-   --version, -v            print the version
+   --tags value, -t value   Filter results by post tag. Available tags: [story poll show_hn ask_hn]. (default: "story,poll,show_hn,ask_hn") [$HNTOP_TAGS]
+
+   Time interval:
+
+   --from value            Start of the time range to show top HN posts from in RFC3339 format. Used in conjuction with --to. [$HNTOP_FROM]
+   --last value, -l value  Interval since current time to show top HN posts from, eg. "12h" (last 12 hours), "6m" (last 6 months). [$HNTOP_LAST]
+   --to value              End of the time range to show top HN posts from in RFC3339 format. Used in conjuction with --from. If omitted, current time will be used. [$HNTOP_TO]
 ```
 
 ## Examples
@@ -89,4 +110,16 @@ hntop -c 100
 
 # get top "Show HN" posts from last year
 hntop -l 1y -t show_hn
+```
+
+### Output
+
+Results can be printed out as a list (default) or sent by e-mail.
+
+```
+# output to console as a list (default)
+hntop -o list
+
+# send results by e-mail
+hntop -o mail --mail-from bob@bob.com --mail-to alice@alice.com --mail-server smtp.bob.com --mail-port 587 --mail-tls mandatory --mail-auth login --mail-username bob --mail-password B0bsP@ss 
 ```
