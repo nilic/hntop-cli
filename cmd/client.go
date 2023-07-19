@@ -17,14 +17,17 @@ type Client struct {
 	httpClient *http.Client
 }
 
-func NewClient() *Client {
-	baseURL, _ := url.Parse(apiBaseURL)
+func NewClient() (*Client, error) {
+	baseURL, err := url.Parse(apiBaseURL)
+	if err != nil {
+		return nil, fmt.Errorf("parsing API base URL: %w", err)
+	}
 	c := &Client{
 		BaseURL:    baseURL,
 		UserAgent:  appName + "/" + getVersion(),
 		httpClient: http.DefaultClient,
 	}
-	return c
+	return c, nil
 }
 
 func (c *Client) NewRequest(path string) (*http.Request, error) {
