@@ -33,7 +33,7 @@ func NewClient() (*Client, error) {
 func (c *Client) NewRequest(path string) (*http.Request, error) {
 	u, err := c.BaseURL.Parse(path)
 	if err != nil {
-		return nil, fmt.Errorf("parsing API base URL: %w", err)
+		return nil, fmt.Errorf("parsing API relative path: %w", err)
 	}
 
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
