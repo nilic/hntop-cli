@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	ht "html/template"
+	tt "text/template"
 	"time"
 
 	"github.com/nilic/hntop-cli/pkg/mailer"
@@ -10,18 +13,55 @@ import (
 )
 
 const (
-	itemBaseURL = "https://news.ycombinator.com/item?id="
-	userBaseURL = "https://news.ycombinator.com/user?id="
-	mailSubject = "[hntop] Top HN posts"
+	itemBaseURL  = "https://news.ycombinator.com/item?id="
+	userBaseURL  = "https://news.ycombinator.com/user?id="
+	mailSubject  = "[hntop] Top HN posts"
+	listTemplate = `{{if .FrontPage}}Displaying HN posts currently on the front page{{else}}Displaying top {{.ResultCount}} HN posts from {{.StartTime}} to {{.EndTime}}{{end -}}
+{{if .Hits}}
+{{range $i, $e := .Hits}}
+{{increment $i}}. {{.Title}}
+{{.GetExternalURL}}
+{{if ne .GetItemURL .GetExternalURL}}{{.GetItemURL}}{{end -}}
+{{.Points}} points by {{.Author}} {{timeAgo .CreatedAt}} | {{.NumComments}}
+{{end}}
+{{end}}`
+	htmlBodyTemplate = `{{if .FrontPage}}HN posts currently on the front page
+{{else}}Top {{.ResultCount}} HN posts from {{.StartTime}} to {{.EndTime}}{{end}}<br><br>
+{{if .Hits}}
+	{{range $i, $e := .Hits}}
+	{{increment $i}}. <a href="{{.GetExternalURL}}">{{.Title}}</a><br>
+	{{.Points}} points by <a href="{{.GetUserURL}}">{{.Author}}</a> {{timeAgo .CreatedAt}} | <a href="{{.GetItemURL}}">{{.NumComments}} comments</a><br><br>
+	{{end}}
+{{end}}`
 )
+
+var templateFuncs = tt.FuncMap{
+	"increment": increment,
+	"timeAgo":   timeAgo,
+}
+
+type templateData struct {
+	FrontPage   bool
+	ResultCount int
+	StartTime   string
+	EndTime     string
+	Hits        []Hit
+}
 
 func (h *Hits) Output(cCtx *cli.Context, q *Query) error {
 	switch cCtx.String("output") {
 	case "list":
-		h.ToList(q)
+		list, err := h.ToList(q)
+		if err != nil {
+			return fmt.Errorf("creating mail body: %w", err)
+		}
+		fmt.Print(list)
 	case "mail":
-		body := h.ToHTML(q)
-		err := h.ToMail(cCtx, body)
+		body, err := h.ToHTML(q)
+		if err != nil {
+			return fmt.Errorf("creating mail body: %w", err)
+		}
+		err = h.ToMail(cCtx, body)
 		if err != nil {
 			return fmt.Errorf("output to mail error: %w", err)
 		}
@@ -61,58 +101,71 @@ func (h *Hits) ToMail(cCtx *cli.Context, body string) error {
 	return nil
 }
 
-func (h *Hits) ToList(q *Query) {
-	var heading string
-	if q.FrontPage {
-		heading = "Displaying HN posts currently on the front page\n"
-	} else {
-		heading = fmt.Sprintf("Displaying top %d HN posts from %s to %s\n", q.ResultCount, (time.Unix(q.StartTime, 0)).Format(time.RFC822), (time.Unix(q.EndTime, 0)).Format(time.RFC822))
+func (h *Hits) ToList(q *Query) (string, error) {
+	var data = templateData{
+		FrontPage:   q.FrontPage,
+		ResultCount: q.ResultCount,
+		StartTime:   (time.Unix(q.StartTime, 0)).Format(time.RFC822),
+		EndTime:     (time.Unix(q.EndTime, 0)).Format(time.RFC822),
+		Hits:        h.Hits,
 	}
-	fmt.Printf("\n" + heading + "\n")
+	t, err := tt.New("list").Funcs(templateFuncs).Parse(listTemplate)
+	if err != nil {
+		return "", fmt.Errorf("creating template: %w", err)
+	}
 
-	for i, s := range h.Hits {
-		fmt.Printf("%d. %s\n", i+1, s.Title)
-		fmt.Println(s.getExternalURL())
-		if s.getItemURL() != s.getExternalURL() {
-			fmt.Println(s.getItemURL())
-		}
-		fmt.Printf("%d points by %s %s | %d comments\n\n", s.Points, s.Author, timeago.New(s.CreatedAt).Format(), s.NumComments)
+	buf := new(bytes.Buffer)
+	err = t.ExecuteTemplate(buf, "list", data)
+	if err != nil {
+		return "", fmt.Errorf("executing template: %w", err)
 	}
+
+	return buf.String(), nil
 }
 
-func (h *Hits) ToHTML(q *Query) string {
-	var out string
-	if q.FrontPage {
-		out = "HN posts currently on the front page<br><br>"
-	} else {
-		out = fmt.Sprintf("Top %d HN posts from %s to %s<br><br>", q.ResultCount, (time.Unix(q.StartTime, 0)).Format(time.RFC822), (time.Unix(q.EndTime, 0)).Format(time.RFC822))
-	}
-	for i, s := range h.Hits {
-		out += fmt.Sprintf("%d. <a href=\"%s\">%s</a><br>", i+1, s.getExternalURL(), s.Title)
-		out += fmt.Sprintf("%d points by <a href=\"%s\">%s</a> %s | <a href=\"%s\">%d comments</a><br><br>",
-			s.Points,
-			s.getUserURL(),
-			s.Author,
-			timeago.New(s.CreatedAt).Format(),
-			s.getItemURL(),
-			s.NumComments)
+func (h *Hits) ToHTML(q *Query) (string, error) {
+	var data = templateData{
+		FrontPage:   q.FrontPage,
+		ResultCount: q.ResultCount,
+		StartTime:   (time.Unix(q.StartTime, 0)).Format(time.RFC822),
+		EndTime:     (time.Unix(q.EndTime, 0)).Format(time.RFC822),
+		Hits:        h.Hits,
 	}
 
-	return out
+	t, err := ht.New("htmlBody").Funcs(templateFuncs).Parse(htmlBodyTemplate)
+	if err != nil {
+		return "", fmt.Errorf("creating template: %w", err)
+	}
+
+	buf := new(bytes.Buffer)
+	err = t.ExecuteTemplate(buf, "htmlBody", data)
+	if err != nil {
+		return "", fmt.Errorf("executing template: %w", err)
+	}
+
+	return buf.String(), nil
 }
 
-func (h *Hit) getItemURL() string {
+func (h Hit) GetItemURL() string {
 	return itemBaseURL + h.ObjectID
 }
 
-func (h *Hit) getExternalURL() string {
+func (h Hit) GetExternalURL() string {
 	if h.URL != "" {
 		return h.URL
 	}
 
-	return h.getItemURL()
+	return h.GetItemURL()
 }
 
-func (h *Hit) getUserURL() string {
+func (h Hit) GetUserURL() string {
 	return userBaseURL + h.Author
+}
+
+func increment(i int) int {
+	return i + 1
+}
+
+func timeAgo(t time.Time) string {
+	return timeago.New(t).Format()
 }
