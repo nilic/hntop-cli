@@ -101,6 +101,20 @@ func NewMailConfig(from, to, subject, contentType, body, server string, port int
 	return &mc, nil
 }
 
+func (mc *MailConfig) SendMail() error {
+	m, err := NewMailer(mc)
+	if err != nil {
+		return fmt.Errorf("creating mail message: %w", err)
+	}
+
+	err = m.Send()
+	if err != nil {
+		return fmt.Errorf("sending mail: %w", err)
+	}
+
+	return nil
+}
+
 func NewMailer(mc *MailConfig) (*Mailer, error) {
 	var m Mailer
 	m.Config = mc
