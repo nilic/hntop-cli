@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	"encoding/json"
@@ -7,25 +7,21 @@ import (
 	"net/url"
 )
 
-const (
-	apiBaseURL = "https://hn.algolia.com/api/v1/"
-)
-
 type Client struct {
 	BaseURL    *url.URL
 	UserAgent  string
 	httpClient *http.Client
 }
 
-func NewClient() (*Client, error) {
-	baseURL, err := url.Parse(apiBaseURL)
+func NewClient(baseURL, userAgent string) (*Client, error) {
+	u, err := url.Parse(baseURL)
 	if err != nil {
 		return nil, fmt.Errorf("parsing API base URL: %w", err)
 	}
 
 	c := &Client{
-		BaseURL:    baseURL,
-		UserAgent:  appName + "/" + getVersion(),
+		BaseURL:    u,
+		UserAgent:  userAgent,
 		httpClient: http.DefaultClient,
 	}
 
