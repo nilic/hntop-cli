@@ -1,5 +1,5 @@
 builds:
-  - main: ./cmd
+  - main: ./cmd/hntop
     binary: hntop
     env:
       - CGO_ENABLED=0

@@ -7,7 +7,7 @@ WORKDIR /build
 COPY go.* ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w -X main.version=$BUILD_VERSION" -a -o hntop ./cmd
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w -X main.version=$BUILD_VERSION" -a -o hntop ./cmd/hntop
 
 # generate clean, final image for end users
 FROM alpine:3.18

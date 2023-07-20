@@ -25,7 +25,7 @@ audit:
 .PHONY: build
 build:
 	go mod verify
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w -X main.version=9.9.9" -a -o ./bin/hntop ./cmd
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w -X main.version=9.9.9" -a -o ./bin/hntop ./cmd/hntop
 
 ## run: run the cmd application
 .PHONY: run
