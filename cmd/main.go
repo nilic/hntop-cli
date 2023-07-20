@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nilic/hntop-cli/pkg/mailer"
+	"github.com/nilic/hntop-cli/internal/mailer"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/exp/slices"
 )

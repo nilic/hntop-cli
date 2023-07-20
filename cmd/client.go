@@ -22,11 +22,13 @@ func NewClient() (*Client, error) {
 	if err != nil {
 		return nil, fmt.Errorf("parsing API base URL: %w", err)
 	}
+
 	c := &Client{
 		BaseURL:    baseURL,
 		UserAgent:  appName + "/" + getVersion(),
 		httpClient: http.DefaultClient,
 	}
+
 	return c, nil
 }
 
@@ -48,10 +50,10 @@ func (c *Client) NewRequest(path string) (*http.Request, error) {
 	return req, nil
 }
 
-func (c *Client) Do(req *http.Request, v interface{}) error {
+func (c *Client) Do(req *http.Request, v any) error {
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return fmt.Errorf("invoking HN API: %w", err)
+		return fmt.Errorf("invoking API: %w", err)
 	}
 
 	defer resp.Body.Close()

@@ -7,7 +7,7 @@ import (
 	tt "text/template"
 	"time"
 
-	"github.com/nilic/hntop-cli/pkg/mailer"
+	"github.com/nilic/hntop-cli/internal/mailer"
 	"github.com/sersh88/timeago"
 	"github.com/urfave/cli/v2"
 )
