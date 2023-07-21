@@ -82,7 +82,7 @@ hntop -l 50y
 
 ### Get top HN posts in a custom timerange
 
-Custom timerange can be defined using the RFC3339 format, ie. `yyyy-MM-dd'T'HH:mm:ss'Z'` for UTC or `yyyy-MM-dd'T'HH:mm:ss±hh:mm` for a specific timezone, where ±hh:mm is the offset to UTC.
+Custom timerange can be defined using the RFC3339 format, ie. `yyyy-MM-dd'T'HH:mm:ss'Z'` for UTC or `yyyy-MM-dd'T'HH:mm:ss±hh:mm` for a specific timezone, where `±hh:mm` is the offset to UTC.
 
 Examples: `2006-01-02T15:04:05Z` is 2 Jan 2006 15:40:05 UTC, while `2017-10-12T20:05:09+01:00` is 12 Oct 2017 20:05:09 CET.
 
