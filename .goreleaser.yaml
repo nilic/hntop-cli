@@ -22,7 +22,7 @@ builds:
       - goos: windows
         goarch: arm
     ldflags:
-      - -s -w -X github.com/nilic/hntop-cli/main.version={{.Version}}
+      - -s -w -X main.version={{.Version}}
 archives:
   - name_template: "hntop_{{ .Tag }}_{{ .Os }}_{{ .Arch }}"
     format: tar.gz
