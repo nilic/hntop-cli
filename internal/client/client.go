@@ -3,6 +3,7 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 )
@@ -47,14 +48,27 @@ func (c *Client) NewRequest(path string) (*http.Request, error) {
 }
 
 func (c *Client) Do(req *http.Request, v any) error {
-	resp, err := c.httpClient.Do(req)
+	res, err := c.httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("invoking API: %w", err)
 	}
 
-	defer resp.Body.Close()
+	if res == nil {
+		return fmt.Errorf("empty response from %s", req.URL.RequestURI())
+	}
 
-	err = json.NewDecoder(resp.Body).Decode(v)
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return fmt.Errorf("reading API response: %w", err)
+	}
+
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("calling %s:\nstatus: %s\nresponseData: %s", req.URL.RequestURI(), res.Status, body)
+	}
+
+	err = json.Unmarshal(body, v)
 
 	if err != nil {
 		return fmt.Errorf("reading response from %s %s: %s", req.Method, req.URL.RequestURI(), err)
