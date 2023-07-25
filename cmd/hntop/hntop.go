@@ -18,12 +18,13 @@ var (
 func Execute(cCtx *cli.Context) error {
 	q := buildQuery(cCtx)
 
-	hnclient, err := client.NewClient(apiBaseURL, userAgent)
+	fullURL := apiBaseURL + q.Query
+	hnclient, err := client.NewClient(fullURL, userAgent)
 	if err != nil {
 		return fmt.Errorf("creating API client: %w", err)
 	}
 
-	req, err := hnclient.NewRequest(q.Query)
+	req, err := hnclient.NewRequest()
 	if err != nil {
 		return fmt.Errorf("creating API query: %w", err)
 	}

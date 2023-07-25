@@ -9,19 +9,19 @@ import (
 )
 
 type Client struct {
-	BaseURL    *url.URL
+	URL        *url.URL
 	UserAgent  string
 	httpClient *http.Client
 }
 
-func NewClient(baseURL, userAgent string) (*Client, error) {
-	u, err := url.Parse(baseURL)
+func NewClient(URL, userAgent string) (*Client, error) {
+	u, err := url.Parse(URL)
 	if err != nil {
-		return nil, fmt.Errorf("parsing API base URL: %w", err)
+		return nil, fmt.Errorf("parsing URL %s: %w", URL, err)
 	}
 
 	c := &Client{
-		BaseURL:    u,
+		URL:        u,
 		UserAgent:  userAgent,
 		httpClient: http.DefaultClient,
 	}
@@ -29,13 +29,8 @@ func NewClient(baseURL, userAgent string) (*Client, error) {
 	return c, nil
 }
 
-func (c *Client) NewRequest(path string) (*http.Request, error) {
-	u, err := c.BaseURL.Parse(path)
-	if err != nil {
-		return nil, fmt.Errorf("parsing API relative path: %w", err)
-	}
-
-	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+func (c *Client) NewRequest() (*http.Request, error) {
+	req, err := http.NewRequest(http.MethodGet, c.URL.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("creating API request: %w", err)
 	}
