@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"regexp"
 )
 
 type Client struct {
@@ -29,14 +30,23 @@ func NewClient(URL, userAgent string) (*Client, error) {
 	return c, nil
 }
 
-func (c *Client) NewRequest() (*http.Request, error) {
-	req, err := http.NewRequest(http.MethodGet, c.URL.String(), nil)
+func (c *Client) NewRequest(httpMethod string, headers map[string]string, body io.Reader) (*http.Request, error) {
+	regex := regexp.MustCompile(`^(GET|POST|PUT|PATCH|DELETE)$`)
+	if !regex.MatchString(httpMethod) {
+		return nil, fmt.Errorf("invalid HTTP method: %s", httpMethod)
+	}
+
+	req, err := http.NewRequest(httpMethod, c.URL.String(), body)
 	if err != nil {
 		return nil, fmt.Errorf("creating API request: %w", err)
 	}
 
 	if c.UserAgent != "" {
 		req.Header.Set("User-Agent", c.UserAgent)
+	}
+
+	for k, v := range headers {
+		req.Header.Set(k, v)
 	}
 
 	return req, nil
@@ -52,7 +62,7 @@ func (c *Client) Do(req *http.Request, v any) error {
 		return fmt.Errorf("empty response from %s", req.URL.RequestURI())
 	}
 
-	body, err := io.ReadAll(res.Body)
+	responseBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		return fmt.Errorf("reading API response: %w", err)
 	}
@@ -60,10 +70,10 @@ func (c *Client) Do(req *http.Request, v any) error {
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("calling %s:\nstatus: %s\nresponseData: %s", req.URL.RequestURI(), res.Status, body)
+		return fmt.Errorf("calling %s:\nstatus: %s\nresponseData: %s", req.URL.RequestURI(), res.Status, responseBody)
 	}
 
-	err = json.Unmarshal(body, v)
+	err = json.Unmarshal(responseBody, v)
 
 	if err != nil {
 		return fmt.Errorf("reading response from %s %s: %s", req.Method, req.URL.RequestURI(), err)
