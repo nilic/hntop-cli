@@ -31,7 +31,7 @@ GLOBAL OPTIONS:
 
    Mail options:
 
-   --mail-auth value      Mail server authentication mechanism, one of: [login plain crammd5 xoauth2]. (default: login) [$HNTOP_MAIL_AUTH]
+   --mail-auth value      Mail server authentication mechanism, one of: [login plain crammd5 xoauth2 none]. (default: login) [$HNTOP_MAIL_AUTH]
    --mail-from value      Mail From address. [$HNTOP_MAIL_FROM]
    --mail-password value  Mail server password. [$HNTOP_MAIL_PASSWORD]
    --mail-port value      Mail server port. (default: 587) [$HNTOP_MAIL_PORT]

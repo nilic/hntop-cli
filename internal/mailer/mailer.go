@@ -13,7 +13,7 @@ const (
 )
 
 var (
-	AvailableAuthMechanisms = []string{"login", "plain", "crammd5", "xoauth2"}
+	AvailableAuthMechanisms = []string{"login", "plain", "crammd5", "xoauth2", "none"}
 	AvailableTLSPolicies    = []string{"mandatory", "opportunistic", "notls"}
 )
 
@@ -88,6 +88,8 @@ func NewMailConfig(from, to, subject, contentType, body, server string, port int
 		mc.Auth = mail.SMTPAuthCramMD5
 	case "xoauth2":
 		mc.Auth = mail.SMTPAuthXOAUTH2
+	case "none":
+		mc.Auth = ""
 	default:
 		mc.Auth = DefaultAuthMechanism
 	}
@@ -139,10 +141,14 @@ func NewMailer(mc *MailConfig) (*Mailer, error) {
 }
 
 func (m *Mailer) Send() error {
-	c, err := mail.NewClient(m.Config.Server, mail.WithPort(m.Config.Port), mail.WithSMTPAuth(m.Config.Auth),
+	c, err := mail.NewClient(m.Config.Server, mail.WithPort(m.Config.Port),
 		mail.WithTLSPolicy(m.Config.Tls), mail.WithUsername(m.Config.Username), mail.WithPassword(m.Config.Password))
 	if err != nil {
 		return fmt.Errorf("failed to create mail client: %s", err)
+	}
+
+	if m.Config.Auth != "" {
+		c.SetSMTPAuth(m.Config.Auth)
 	}
 
 	fmt.Printf("Sending mail to %s.. ", m.Config.To)
