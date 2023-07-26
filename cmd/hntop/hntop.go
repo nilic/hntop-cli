@@ -21,18 +21,18 @@ func Execute(cCtx *cli.Context) error {
 
 	fullURL := apiBaseURL + q.Query
 
-	hnclient, err := client.NewClient(fullURL, userAgent)
+	apiClient, err := client.NewClient(fullURL, userAgent)
 	if err != nil {
 		return fmt.Errorf("creating API client: %w", err)
 	}
 
-	req, err := hnclient.NewRequest(http.MethodGet, nil, nil)
+	req, err := apiClient.NewRequest(http.MethodGet, nil, nil)
 	if err != nil {
 		return fmt.Errorf("creating API query: %w", err)
 	}
 
 	var h Hits
-	err = hnclient.Do(req, &h)
+	err = apiClient.Do(req, &h)
 	if err != nil {
 		return fmt.Errorf("calling HN API: %w", err)
 	}
