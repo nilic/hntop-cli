@@ -76,7 +76,7 @@ func (c *Client) Do(req *http.Request, v any) error {
 	err = json.Unmarshal(responseBody, v)
 
 	if err != nil {
-		return fmt.Errorf("reading response from %s %s: %s", req.Method, req.URL.RequestURI(), err)
+		return fmt.Errorf("reading response from %s %s: %w", req.Method, req.URL.RequestURI(), err)
 	}
 
 	return nil

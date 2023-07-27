@@ -128,10 +128,10 @@ func NewMailer(mc *MailConfig) (*Mailer, error) {
 
 	m.Msg = mail.NewMsg()
 	if err := m.Msg.From(m.Config.From); err != nil {
-		return nil, fmt.Errorf("failed to set mail From address: %s", err)
+		return nil, fmt.Errorf("failed to set mail From address: %w", err)
 	}
 	if err := m.Msg.To(m.Config.To); err != nil {
-		return nil, fmt.Errorf("failed to set mail To address: %s", err)
+		return nil, fmt.Errorf("failed to set mail To address: %w", err)
 	}
 
 	m.Msg.Subject(m.Config.Subject)
@@ -144,7 +144,7 @@ func (m *Mailer) Send() error {
 	c, err := mail.NewClient(m.Config.Server, mail.WithPort(m.Config.Port),
 		mail.WithTLSPolicy(m.Config.Tls), mail.WithUsername(m.Config.Username), mail.WithPassword(m.Config.Password))
 	if err != nil {
-		return fmt.Errorf("failed to create mail client: %s", err)
+		return fmt.Errorf("failed to create mail client: %w", err)
 	}
 
 	if m.Config.Auth != "" {
@@ -154,7 +154,7 @@ func (m *Mailer) Send() error {
 	fmt.Printf("Sending mail to %s.. ", m.Config.To)
 
 	if err := c.DialAndSend(m.Msg); err != nil {
-		return fmt.Errorf("failed to send mail: %s", err)
+		return fmt.Errorf("failed to send mail: %w", err)
 	}
 
 	fmt.Print("Done.\n")
