@@ -25,7 +25,7 @@ const (
 {{- if ne .GetItemURL .GetExternalURL}}
 {{.GetItemURL}}
 {{- end}}
-{{.Points}} points by {{.Author}} {{timeAgo .CreatedAt}} | {{.NumComments}}
+{{.Points}} points by {{.Author}} {{timeAgo .CreatedAt}} | {{.NumComments}} comments
 {{end}}
 {{end}}`
 
