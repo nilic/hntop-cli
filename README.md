@@ -1,7 +1,7 @@
 # hntop-cli 
 CLI utility for displaying top [Hacker News](https://news.ycombinator.com/) articles for a given time period. Posts are sorted based on number of points, then number of comments.
 
-Relies on [HN Search API](https://hn.algolia.com/api).
+Relies on [HN Search API](https://hn.algolia.com/api). Please bear in mind that Algolia limits the number of API requests from a single IP to 10,000 per hour.
 
 ## Installation
 
