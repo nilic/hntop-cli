@@ -35,7 +35,7 @@ const (
 {{else}}Top {{.ResultCount}} HN posts from {{.StartTime}} to {{.EndTime}}{{end}}<br><br>
 {{if .Hits}}
 	{{range $i, $e := .Hits}}
-	{{increment $i}}. <a href="{{.GetExternalURL}}">{{.Title}}</a>{{if ne .GetExternalBaseUrl ""}} (<a href="{{.GetFromURL}}">{{.GetExternalBaseUrl}}</a>){{end}}<br>
+	{{increment $i}}. <a href="{{.GetExternalURL}}">{{.Title}}</a>{{if ne .GetBaseExternalURL ""}} (<a href="{{.GetFromURL}}">{{.GetBaseExternalURL}}</a>){{end}}<br>
 	{{.Points}} points by <a href="{{.GetUserURL}}">{{.Author}}</a> {{timeAgo .CreatedAt}} | <a href="{{.GetItemURL}}">{{.NumComments}} comments</a><br><br>
 	{{end}}
 {{end}}`
@@ -148,7 +148,7 @@ func (h Hit) GetUserURL() string {
 	return userBaseURL + h.Author
 }
 
-func (h Hit) GetExternalBaseURL() string {
+func (h Hit) GetBaseExternalURL() string {
 	if h.URL == "" {
 		return ""
 	}
@@ -162,7 +162,7 @@ func (h Hit) GetExternalBaseURL() string {
 }
 
 func (h Hit) GetFromURL() string {
-	b := h.GetExternalBaseURL()
+	b := h.GetBaseExternalURL()
 
 	if b == "" {
 		return ""
