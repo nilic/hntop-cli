@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	ht "html/template"
+	"net/url"
 	tt "text/template"
 	"time"
 
@@ -13,6 +14,7 @@ import (
 )
 
 const (
+	fromBaseURL = "https://news.ycombinator.com/from?site="
 	itemBaseURL = "https://news.ycombinator.com/item?id="
 	userBaseURL = "https://news.ycombinator.com/user?id="
 	mailSubject = "[hntop] Top HN posts"
@@ -20,7 +22,7 @@ const (
 	listTemplate = `{{if .FrontPage}}Displaying HN posts currently on the front page{{else}}Displaying top {{.ResultCount}} HN posts from {{.StartTime}} to {{.EndTime}}{{end -}}
 {{if .Hits}}
 {{range $i, $e := .Hits}}
-{{increment $i}}. {{.Title}}
+{{increment $i}}. {{.Title}}{{if ne .GetBaseExternalURL ""}} ({{.GetBaseExternalURL}}){{end}}
 {{.GetExternalURL}}
 {{- if ne .GetItemURL .GetExternalURL}}
 {{.GetItemURL}}
@@ -33,7 +35,7 @@ const (
 {{else}}Top {{.ResultCount}} HN posts from {{.StartTime}} to {{.EndTime}}{{end}}<br><br>
 {{if .Hits}}
 	{{range $i, $e := .Hits}}
-	{{increment $i}}. <a href="{{.GetExternalURL}}">{{.Title}}</a><br>
+	{{increment $i}}. <a href="{{.GetExternalURL}}">{{.Title}}</a>{{if ne .GetBaseExternalURL ""}} (<a href="{{.GetFromURL}}">{{.GetBaseExternalURL}}</a>){{end}}<br>
 	{{.Points}} points by <a href="{{.GetUserURL}}">{{.Author}}</a> {{timeAgo .CreatedAt}} | <a href="{{.GetItemURL}}">{{.NumComments}} comments</a><br><br>
 	{{end}}
 {{end}}`
@@ -144,6 +146,29 @@ func (h Hit) GetExternalURL() string {
 
 func (h Hit) GetUserURL() string {
 	return userBaseURL + h.Author
+}
+
+func (h Hit) GetBaseExternalURL() string {
+	if h.URL == "" {
+		return ""
+	}
+
+	u, err := url.Parse(h.URL)
+	if err != nil {
+		return ""
+	}
+
+	return u.Hostname()
+}
+
+func (h Hit) GetFromURL() string {
+	b := h.GetBaseExternalURL()
+
+	if b == "" {
+		return ""
+	}
+
+	return fromBaseURL + b
 }
 
 func increment(i int) int {
