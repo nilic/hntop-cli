@@ -65,13 +65,13 @@ func (h *Hits) Output(cCtx *cli.Context, q *Query) error {
 
 	switch cCtx.String("output") {
 	case "list":
-		list, err := makeListOutput(data)
+		list, err := outputList(data)
 		if err != nil {
 			return fmt.Errorf("creating list output: %w", err)
 		}
 		fmt.Print(list)
 	case "mail":
-		body, err := makeHTMLOutput(data)
+		body, err := outputHTML(data)
 		if err != nil {
 			return fmt.Errorf("creating mail body: %w", err)
 		}
@@ -102,7 +102,7 @@ func (h *Hits) Output(cCtx *cli.Context, q *Query) error {
 	return nil
 }
 
-func makeListOutput(data templateData) (string, error) {
+func outputList(data templateData) (string, error) {
 	t, err := tt.New("list").Funcs(templateFuncs).Parse(listTemplate)
 	if err != nil {
 		return "", fmt.Errorf("creating template: %w", err)
@@ -117,7 +117,7 @@ func makeListOutput(data templateData) (string, error) {
 	return buf.String(), nil
 }
 
-func makeHTMLOutput(data templateData) (string, error) {
+func outputHTML(data templateData) (string, error) {
 	t, err := ht.New("htmlBody").Funcs(templateFuncs).Parse(htmlBodyTemplate)
 	if err != nil {
 		return "", fmt.Errorf("creating template: %w", err)
