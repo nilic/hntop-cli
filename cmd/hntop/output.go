@@ -22,7 +22,7 @@ const (
 	listTemplate = `{{if .FrontPage}}Displaying HN posts currently on the front page{{else}}Displaying top {{.ResultCount}} HN posts from {{.StartTime}} to {{.EndTime}}{{end -}}
 {{if .Hits}}
 {{range $i, $e := .Hits}}
-{{increment $i}}. {{.Title}}
+{{increment $i}}. {{.Title}}{{if ne .GetBaseExternalURL ""}} ({{.GetBaseExternalURL}}){{end}}
 {{.GetExternalURL}}
 {{- if ne .GetItemURL .GetExternalURL}}
 {{.GetItemURL}}
