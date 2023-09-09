@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"time"
 )
 
 type Client struct {
@@ -22,9 +23,11 @@ func NewClient(URL, userAgent string) (*Client, error) {
 	}
 
 	c := &Client{
-		URL:        u,
-		UserAgent:  userAgent,
-		httpClient: http.DefaultClient,
+		URL:       u,
+		UserAgent: userAgent,
+		httpClient: &http.Client{
+			Timeout: time.Second * 10,
+		},
 	}
 
 	return c, nil
