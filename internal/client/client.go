@@ -84,3 +84,22 @@ func (c *Client) Do(req *http.Request, v any) error {
 
 	return nil
 }
+
+func Get(URL, userAgent string, headers map[string]string, v any) error {
+	c, err := NewClient(URL, userAgent)
+	if err != nil {
+		return fmt.Errorf("creating API client: %w", err)
+	}
+
+	req, err := c.NewRequest(http.MethodGet, headers, nil)
+	if err != nil {
+		return fmt.Errorf("creating API request: %w", err)
+	}
+
+	err = c.Do(req, v)
+	if err != nil {
+		return fmt.Errorf("calling API: %w", err)
+	}
+
+	return nil
+}
