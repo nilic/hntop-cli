@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/nilic/hntop-cli/internal/client"
@@ -36,22 +35,12 @@ type Hits struct {
 }
 
 func Execute(cCtx *cli.Context) error {
-	q := buildQuery(cCtx)
+	var h Hits
 
+	q := buildQuery(cCtx)
 	fullURL := apiBaseURL + q.Query
 
-	apiClient, err := client.NewClient(fullURL, userAgent)
-	if err != nil {
-		return fmt.Errorf("creating API client: %w", err)
-	}
-
-	req, err := apiClient.NewRequest(http.MethodGet, nil, nil)
-	if err != nil {
-		return fmt.Errorf("creating API query: %w", err)
-	}
-
-	var h Hits
-	err = apiClient.Do(req, &h)
+	err := client.MakeHTTPRequest("GET", fullURL, userAgent, nil, nil, &h)
 	if err != nil {
 		return fmt.Errorf("calling HN API: %w", err)
 	}
