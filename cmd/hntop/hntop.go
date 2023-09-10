@@ -40,7 +40,7 @@ func Execute(cCtx *cli.Context) error {
 	q := buildQuery(cCtx)
 	fullURL := apiBaseURL + q.Query
 
-	err := client.Get(fullURL, userAgent, nil, &h)
+	err := client.MakeHTTPRequest("GET", fullURL, userAgent, nil, nil, &h)
 	if err != nil {
 		return fmt.Errorf("calling HN API: %w", err)
 	}
