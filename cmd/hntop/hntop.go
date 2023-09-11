@@ -35,12 +35,11 @@ type Hits struct {
 }
 
 func Execute(cCtx *cli.Context) error {
-	var h Hits
-
 	q := buildQuery(cCtx)
 	fullURL := apiBaseURL + q.Query
 
-	err := client.MakeHTTPRequest("GET", fullURL, userAgent, nil, nil, &h)
+	var h Hits
+	h, err := client.MakeHTTPRequest("GET", fullURL, userAgent, nil, nil, h)
 	if err != nil {
 		return fmt.Errorf("calling HN API: %w", err)
 	}
