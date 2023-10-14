@@ -208,7 +208,7 @@ func newApp() *cli.App {
 			},
 		},
 		Action: func(cCtx *cli.Context) error {
-			err := Execute(cCtx)
+			err := execute(cCtx)
 			if err != nil {
 				return err
 			}

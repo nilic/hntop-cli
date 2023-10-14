@@ -16,7 +16,7 @@ var (
 	userAgent = appName + "/" + getVersion()
 )
 
-func Execute(cCtx *cli.Context) error {
+func execute(cCtx *cli.Context) error {
 	qp := htclient.QueryParams{
 		FrontPage: cCtx.Bool("front-page"),
 		Last:      cCtx.String("last"),
