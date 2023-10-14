@@ -2,51 +2,56 @@ package main
 
 import (
 	"fmt"
-	"time"
 
-	"github.com/nilic/hntop-cli/internal/client"
+	"github.com/nilic/hntop-cli/internal/mailer"
+	"github.com/nilic/hntop-cli/pkg/hntopclient"
 	"github.com/urfave/cli/v2"
 )
 
 const (
-	apiBaseURL = "https://hn.algolia.com/api/v1/"
+	mailSubject = "[hntop] Top HN posts"
 )
 
 var (
 	userAgent = appName + "/" + getVersion()
 )
 
-type Hit struct {
-	CreatedAt   time.Time `json:"created_at"`
-	Title       string    `json:"title"`
-	URL         string    `json:"url"`
-	Author      string    `json:"author"`
-	Points      int       `json:"points"`
-	NumComments int       `json:"num_comments"`
-	ObjectID    string    `json:"objectID"`
-}
-
-type Hits struct {
-	Hits        []Hit `json:"hits"`
-	NbHits      int   `json:"nbHits"`
-	Page        int   `json:"page"`
-	NbPages     int   `json:"nbPages"`
-	HitsPerPage int   `json:"hitsPerPage"`
-}
-
 func Execute(cCtx *cli.Context) error {
 	q := buildQuery(cCtx)
-	fullURL := apiBaseURL + q.Query
 
-	var h Hits
-	h, err := client.MakeHTTPRequest("GET", fullURL, userAgent, nil, nil, h)
+	c := hntopclient.NewClient(q.Query, userAgent)
+	h, err := c.Do()
 	if err != nil {
-		return fmt.Errorf("calling HN API: %w", err)
+		return fmt.Errorf("invoking HN API: %w", err)
 	}
 
-	err = h.Output(cCtx, q)
+	output, err := h.Output(cCtx.String("output"), q)
 	if err != nil {
 		return fmt.Errorf("creating output: %w", err)
+	}
+
+	if cCtx.String("output") == "list" {
+		fmt.Print(output)
+	} else {
+		mc, err := mailer.NewMailConfig(cCtx.String("mail-from"),
+			cCtx.String("mail-to"),
+			mailSubject,
+			"html",
+			output,
+			cCtx.String("mail-server"),
+			cCtx.Int("mail-port"),
+			cCtx.String("mail-username"),
+			cCtx.String("mail-password"),
+			cCtx.String("mail-auth"),
+			cCtx.String("mail-tls"))
+		if err != nil {
+			return fmt.Errorf("configuring mail options: %w", err)
+		}
+
+		err = mc.SendMail()
+		if err != nil {
+			return fmt.Errorf("output to mail error: %w", err)
+		}
 	}
 
 	return nil

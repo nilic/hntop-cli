@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/nilic/hntop-cli/pkg/hntopclient"
 	"github.com/urfave/cli/v2"
 )
 
@@ -13,17 +14,8 @@ const (
 	frontPagePostCount = 30
 )
 
-type Query struct {
-	ResultCount int
-	StartTime   int64
-	EndTime     int64
-	FrontPage   bool
-	Tags        string
-	Query       string
-}
-
-func buildQuery(cCtx *cli.Context) *Query {
-	var q Query
+func buildQuery(cCtx *cli.Context) *hntopclient.Query {
+	var q hntopclient.Query
 	if cCtx.Bool("front-page") {
 		q.FrontPage = true
 		q.ResultCount = frontPagePostCount
