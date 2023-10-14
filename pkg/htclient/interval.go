@@ -1,10 +1,10 @@
-package main
+package htclient
 
 import (
 	"strconv"
 )
 
-var intervals = map[string]Interval{
+var intervals = map[string]interval{
 	"h": {
 		Unit:       "hour",
 		LengthSecs: 60 * 60,
@@ -27,7 +27,7 @@ var intervals = map[string]Interval{
 	},
 }
 
-type Interval struct {
+type interval struct {
 	Unit       string
 	LengthSecs int64
 }
@@ -39,11 +39,11 @@ func intervaltoSecs(s string) int64 {
 	return length * intervals[unit].LengthSecs
 }
 
-func getIntervalUnits(m map[string]Interval) []string {
-	unitSlice := make([]string, len(m))
+func GetIntervalUnits() []string {
+	unitSlice := make([]string, len(intervals))
 
 	i := 0
-	for k := range m {
+	for k := range intervals {
 		unitSlice[i] = k
 		i++
 	}

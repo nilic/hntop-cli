@@ -1,10 +1,8 @@
-package main
+package htclient
 
 import (
 	"fmt"
 	"time"
-
-	"github.com/urfave/cli/v2"
 )
 
 const (
@@ -12,6 +10,15 @@ const (
 	defaultInterval    = "1w"
 	frontPagePostCount = 30
 )
+
+type QueryParams struct {
+	FrontPage bool
+	Last      string
+	From      string
+	To        string
+	Tags      string
+	Count     int
+}
 
 type Query struct {
 	ResultCount int
@@ -22,9 +29,9 @@ type Query struct {
 	Query       string
 }
 
-func buildQuery(cCtx *cli.Context) *Query {
+func NewQuery(qp QueryParams) *Query {
 	var q Query
-	if cCtx.Bool("front-page") {
+	if qp.FrontPage {
 		q.FrontPage = true
 		q.ResultCount = frontPagePostCount
 		q.Query = queryPrefix +
@@ -33,18 +40,18 @@ func buildQuery(cCtx *cli.Context) *Query {
 		return &q
 	}
 
-	if cCtx.String("last") != "" {
+	if qp.Last != "" {
 		q.EndTime = time.Now().Unix()
-		interval := intervaltoSecs(cCtx.String("last"))
+		interval := intervaltoSecs(qp.Last)
 		q.StartTime = q.EndTime - interval
-	} else if cCtx.String("from") != "" {
-		if cCtx.String("to") != "" {
-			e, _ := time.Parse(time.RFC3339, cCtx.String("to"))
+	} else if qp.From != "" {
+		if qp.To != "" {
+			e, _ := time.Parse(time.RFC3339, qp.To)
 			q.EndTime = e.Unix()
 		} else {
 			q.EndTime = time.Now().Unix()
 		}
-		s, _ := time.Parse(time.RFC3339, cCtx.String("from"))
+		s, _ := time.Parse(time.RFC3339, qp.From)
 		q.StartTime = s.Unix()
 	} else {
 		q.EndTime = time.Now().Unix()
@@ -56,8 +63,8 @@ func buildQuery(cCtx *cli.Context) *Query {
 		q.StartTime = 0
 	}
 
-	q.Tags = cCtx.String("tags")
-	q.ResultCount = cCtx.Int("count")
+	q.Tags = qp.Tags
+	q.ResultCount = qp.Count
 
 	q.Query = queryPrefix +
 		fmt.Sprintf("numericFilters=created_at_i>%d,created_at_i<%d", q.StartTime, q.EndTime) +

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/nilic/hntop-cli/internal/mailer"
+	"github.com/nilic/hntop-cli/pkg/htclient"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/exp/slices"
 )
@@ -32,7 +33,7 @@ func newApp() *cli.App {
 						return fmt.Errorf("invalid interval length, needs to be in format <number><unit>, eg. 12h for 12 hours or 6m for 6 months")
 					}
 					last := s[len(s)-1:]
-					units := getIntervalUnits(intervals)
+					units := htclient.GetIntervalUnits()
 					if !slices.Contains(units, last) {
 						return fmt.Errorf("invalid interval unit, must end in one of %v", units)
 					}
@@ -207,7 +208,7 @@ func newApp() *cli.App {
 			},
 		},
 		Action: func(cCtx *cli.Context) error {
-			err := Execute(cCtx)
+			err := execute(cCtx)
 			if err != nil {
 				return err
 			}

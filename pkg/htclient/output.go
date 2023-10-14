@@ -1,4 +1,4 @@
-package main
+package htclient
 
 import (
 	"bytes"
@@ -8,16 +8,13 @@ import (
 	tt "text/template"
 	"time"
 
-	"github.com/nilic/hntop-cli/internal/mailer"
 	"github.com/sersh88/timeago"
-	"github.com/urfave/cli/v2"
 )
 
 const (
 	fromBaseURL = "https://news.ycombinator.com/from?site="
 	itemBaseURL = "https://news.ycombinator.com/item?id="
 	userBaseURL = "https://news.ycombinator.com/user?id="
-	mailSubject = "[hntop] Top HN posts"
 
 	listTemplate = `{{if .FrontPage}}Displaying HN posts currently on the front page{{else}}Displaying top {{.ResultCount}} HN posts from {{.StartTime}} to {{.EndTime}}{{end -}}
 {{if .Hits}}
@@ -54,7 +51,7 @@ type templateData struct {
 	Hits        []Hit
 }
 
-func (h *Hits) Output(cCtx *cli.Context, q *Query) error {
+func (h *Hits) Output(outputType string, q *Query) (string, error) {
 	var data = templateData{
 		FrontPage:   q.FrontPage,
 		ResultCount: q.ResultCount,
@@ -63,43 +60,22 @@ func (h *Hits) Output(cCtx *cli.Context, q *Query) error {
 		Hits:        h.Hits,
 	}
 
-	switch cCtx.String("output") {
+	switch outputType {
 	case "list":
-		list, err := outputList(data)
+		output, err := outputList(data)
 		if err != nil {
-			return fmt.Errorf("creating list output: %w", err)
+			return "", fmt.Errorf("creating list output: %w", err)
 		}
-		fmt.Print(list)
+		return output, nil
 	case "mail":
-		body, err := outputHTML(data)
+		output, err := outputHTML(data)
 		if err != nil {
-			return fmt.Errorf("creating mail body: %w", err)
+			return "", fmt.Errorf("creating mail body: %w", err)
 		}
-
-		mc, err := mailer.NewMailConfig(cCtx.String("mail-from"),
-			cCtx.String("mail-to"),
-			mailSubject,
-			"html",
-			body,
-			cCtx.String("mail-server"),
-			cCtx.Int("mail-port"),
-			cCtx.String("mail-username"),
-			cCtx.String("mail-password"),
-			cCtx.String("mail-auth"),
-			cCtx.String("mail-tls"))
-		if err != nil {
-			return fmt.Errorf("configuring mail options: %w", err)
-		}
-
-		err = mc.SendMail()
-		if err != nil {
-			return fmt.Errorf("output to mail error: %w", err)
-		}
+		return output, nil
 	default:
-		return fmt.Errorf("unknown output type: %s", cCtx.String("output"))
+		return "", fmt.Errorf("unknown output type: %s", outputType)
 	}
-
-	return nil
 }
 
 func outputList(data templateData) (string, error) {
