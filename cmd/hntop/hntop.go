@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/nilic/hntop-cli/internal/mailer"
-	"github.com/nilic/hntop-cli/pkg/hntopclient"
+	"github.com/nilic/hntop-cli/pkg/htclient"
 	"github.com/urfave/cli/v2"
 )
 
@@ -17,7 +17,7 @@ var (
 )
 
 func Execute(cCtx *cli.Context) error {
-	qp := hntopclient.QueryParams{
+	qp := htclient.QueryParams{
 		FrontPage: cCtx.Bool("front-page"),
 		Last:      cCtx.String("last"),
 		From:      cCtx.String("from"),
@@ -26,9 +26,9 @@ func Execute(cCtx *cli.Context) error {
 		Count:     cCtx.Int("count"),
 	}
 
-	q := hntopclient.NewQuery(qp)
+	q := htclient.NewQuery(qp)
 
-	c := hntopclient.NewClient(q.Query, userAgent)
+	c := htclient.NewClient(q.Query, userAgent)
 	h, err := c.Do()
 	if err != nil {
 		return fmt.Errorf("invoking HN API: %w", err)

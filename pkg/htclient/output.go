@@ -1,4 +1,4 @@
-package hntopclient
+package htclient
 
 import (
 	"bytes"

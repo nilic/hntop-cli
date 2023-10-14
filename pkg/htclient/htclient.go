@@ -1,4 +1,4 @@
-package hntopclient
+package htclient
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ const (
 	apiBaseURL = "https://hn.algolia.com/api/v1/"
 )
 
-type HNTopClient struct {
+type HTClient struct {
 	URL       string
 	UserAgent string
 }
@@ -34,14 +34,14 @@ type Hits struct {
 	HitsPerPage int   `json:"hitsPerPage"`
 }
 
-func NewClient(query, userAgent string) *HNTopClient {
-	return &HNTopClient{
+func NewClient(query, userAgent string) *HTClient {
+	return &HTClient{
 		URL:       apiBaseURL + query,
 		UserAgent: userAgent,
 	}
 }
 
-func (c *HNTopClient) Do() (*Hits, error) {
+func (c *HTClient) Do() (*Hits, error) {
 	var h Hits
 	h, err := client.MakeHTTPRequest("GET", c.URL, c.UserAgent, nil, nil, h)
 	if err != nil {
