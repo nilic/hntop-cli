@@ -4,7 +4,7 @@ import (
 	"strconv"
 )
 
-var intervals = map[string]Interval{
+var intervals = map[string]interval{
 	"h": {
 		Unit:       "hour",
 		LengthSecs: 60 * 60,
@@ -27,7 +27,7 @@ var intervals = map[string]Interval{
 	},
 }
 
-type Interval struct {
+type interval struct {
 	Unit       string
 	LengthSecs int64
 }
