@@ -17,7 +17,16 @@ var (
 )
 
 func Execute(cCtx *cli.Context) error {
-	q := buildQuery(cCtx)
+	qp := hntopclient.QueryParams{
+		FrontPage: cCtx.Bool("front-page"),
+		Last:      cCtx.String("last"),
+		From:      cCtx.String("from"),
+		To:        cCtx.String("to"),
+		Tags:      cCtx.String("tags"),
+		Count:     cCtx.Int("count"),
+	}
+
+	q := hntopclient.NewQuery(qp)
 
 	c := hntopclient.NewClient(q.Query, userAgent)
 	h, err := c.Do()
