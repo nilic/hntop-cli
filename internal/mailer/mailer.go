@@ -2,6 +2,7 @@ package mailer
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/wneessen/go-mail"
 )
@@ -10,6 +11,8 @@ const (
 	DefaultAuthMechanism = mail.SMTPAuthLogin
 	DefaultTLSPolicy     = mail.TLSMandatory
 	DefaultPort          = 587
+	sendRetryCount       = 3
+	sendRetryWait        = 10 * time.Second
 )
 
 var (
@@ -18,145 +21,105 @@ var (
 )
 
 type Mailer struct {
-	Msg    *mail.Msg
-	Config *MailConfig
+	From   string
+	Client *mail.Client
 }
 
-type MailConfig struct {
-	From        string
-	To          string
-	Subject     string
-	ContentType mail.ContentType
-	Body        string
-	Server      string
-	Port        int
-	Username    string
-	Password    string
-	Auth        mail.SMTPAuthType
-	Tls         mail.TLSPolicy
-}
-
-func NewMailConfig(from, to, subject, contentType, body, server string, port int, username, password, auth, tls string) (*MailConfig, error) {
-	var mc MailConfig
-
-	if from != "" {
-		mc.From = from
-	} else {
+func New(from, server string, port int, username, password, auth, tls string) (*Mailer, error) {
+	if from == "" {
 		return nil, fmt.Errorf("mail From address is required")
 	}
 
-	if to != "" {
-		mc.To = to
-	} else {
-		return nil, fmt.Errorf("mail To address is required")
-	}
-
-	mc.Subject = subject
-
-	switch contentType {
-	case "html":
-		mc.ContentType = mail.TypeTextHTML
-	case "text":
-		mc.ContentType = mail.TypeTextPlain
-	default:
-		return nil, fmt.Errorf("unknown mail content type: %s", contentType)
-	}
-
-	mc.Body = body
-
-	if server != "" {
-		mc.Server = server
-	} else {
+	if server == "" {
 		return nil, fmt.Errorf("mail server DNS or IP is required")
 	}
 
-	if port != 0 {
-		mc.Port = port
-	} else {
-		mc.Port = DefaultPort
+	if port == 0 {
+		port = DefaultPort
 	}
 
-	mc.Username = username
-	mc.Password = password
-
+	var authentication mail.SMTPAuthType
 	switch auth {
 	case "login":
-		mc.Auth = mail.SMTPAuthLogin
+		authentication = mail.SMTPAuthLogin
 	case "plain":
-		mc.Auth = mail.SMTPAuthPlain
+		authentication = mail.SMTPAuthPlain
 	case "crammd5":
-		mc.Auth = mail.SMTPAuthCramMD5
+		authentication = mail.SMTPAuthCramMD5
 	case "xoauth2":
-		mc.Auth = mail.SMTPAuthXOAUTH2
+		authentication = mail.SMTPAuthXOAUTH2
 	case "none":
-		mc.Auth = ""
+		authentication = ""
 	default:
-		mc.Auth = DefaultAuthMechanism
+		authentication = DefaultAuthMechanism
 	}
 
+	var tlsPolicy mail.TLSPolicy
 	switch tls {
 	case "mandatory":
-		mc.Tls = mail.TLSMandatory
+		tlsPolicy = mail.TLSMandatory
 	case "opportunistic":
-		mc.Tls = mail.TLSOpportunistic
+		tlsPolicy = mail.TLSOpportunistic
 	case "notls":
-		mc.Tls = mail.NoTLS
+		tlsPolicy = mail.NoTLS
 	default:
-		mc.Tls = DefaultTLSPolicy
+		tlsPolicy = DefaultTLSPolicy
 	}
 
-	return &mc, nil
+	client, err := mail.NewClient(server, mail.WithPort(port),
+		mail.WithTLSPolicy(tlsPolicy), mail.WithUsername(username), mail.WithPassword(password))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create mail client: %w", err)
+	}
+
+	if authentication != "" {
+		client.SetSMTPAuth(authentication)
+	}
+
+	return &Mailer{
+		From:   from,
+		Client: client,
+	}, nil
 }
 
-func (mc *MailConfig) SendMail() error {
-	m, err := NewMailer(mc)
+func (m *Mailer) SendString(to, subject, plainBody, htmlBody string) error {
+	var err error
+
+	msg := mail.NewMsg()
+
+	if err = msg.From(m.From); err != nil {
+		return fmt.Errorf("failed to set mail From address: %w", err)
+	}
+
+	if err = msg.To(to); err != nil {
+		return fmt.Errorf("failed to set mail To address: %w", err)
+	}
+
+	msg.Subject(subject)
+	msg.SetBodyString("text/plain", plainBody)
+	msg.AddAlternativeString("text/html", htmlBody)
+
+	fmt.Printf("Sending mail to %s.. ", to)
+	m.sendMsg(msg)
 	if err != nil {
-		return fmt.Errorf("creating mail message: %w", err)
-	}
-
-	err = m.Send()
-	if err != nil {
-		return fmt.Errorf("sending mail: %w", err)
-	}
-
-	return nil
-}
-
-func NewMailer(mc *MailConfig) (*Mailer, error) {
-	var m Mailer
-	m.Config = mc
-
-	m.Msg = mail.NewMsg()
-	if err := m.Msg.From(m.Config.From); err != nil {
-		return nil, fmt.Errorf("failed to set mail From address: %w", err)
-	}
-	if err := m.Msg.To(m.Config.To); err != nil {
-		return nil, fmt.Errorf("failed to set mail To address: %w", err)
-	}
-
-	m.Msg.Subject(m.Config.Subject)
-	m.Msg.SetBodyString(m.Config.ContentType, m.Config.Body)
-
-	return &m, nil
-}
-
-func (m *Mailer) Send() error {
-	c, err := mail.NewClient(m.Config.Server, mail.WithPort(m.Config.Port),
-		mail.WithTLSPolicy(m.Config.Tls), mail.WithUsername(m.Config.Username), mail.WithPassword(m.Config.Password))
-	if err != nil {
-		return fmt.Errorf("failed to create mail client: %w", err)
-	}
-
-	if m.Config.Auth != "" {
-		c.SetSMTPAuth(m.Config.Auth)
-	}
-
-	fmt.Printf("Sending mail to %s.. ", m.Config.To)
-
-	if err := c.DialAndSend(m.Msg); err != nil {
-		return fmt.Errorf("failed to send mail: %w", err)
+		return fmt.Errorf("sending mail from string: %w", err)
 	}
 
 	fmt.Print("Done.\n")
 	return nil
+}
+
+func (m *Mailer) sendMsg(msg *mail.Msg) error {
+	var err error
+
+	for i := 1; i <= sendRetryCount; i++ {
+		err := m.Client.DialAndSend(msg)
+		if nil == err {
+			return nil
+		}
+
+		time.Sleep(sendRetryWait)
+	}
+
+	return fmt.Errorf("failed to send mail: %w", err)
 }

@@ -42,11 +42,7 @@ func execute(cCtx *cli.Context) error {
 	if cCtx.String("output") == "list" {
 		fmt.Print(output)
 	} else {
-		mc, err := mailer.NewMailConfig(cCtx.String("mail-from"),
-			cCtx.String("mail-to"),
-			mailSubject,
-			"html",
-			output,
+		mc, err := mailer.New(cCtx.String("mail-from"),
 			cCtx.String("mail-server"),
 			cCtx.Int("mail-port"),
 			cCtx.String("mail-username"),
@@ -54,12 +50,12 @@ func execute(cCtx *cli.Context) error {
 			cCtx.String("mail-auth"),
 			cCtx.String("mail-tls"))
 		if err != nil {
-			return fmt.Errorf("configuring mail options: %w", err)
+			return fmt.Errorf("configuring mail client: %w", err)
 		}
 
-		err = mc.SendMail()
+		err = mc.SendString(cCtx.String("mail-to"), mailSubject, "", output)
 		if err != nil {
-			return fmt.Errorf("output to mail error: %w", err)
+			return fmt.Errorf("sending mail: %w", err)
 		}
 	}
 
