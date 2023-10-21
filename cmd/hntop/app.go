@@ -28,7 +28,7 @@ var (
 )
 
 func newApp() *cli.App {
-	app := &cli.App{
+	return &cli.App{
 		Name:  appName,
 		Usage: "display top Hacker News posts",
 		Flags: []cli.Flag{
@@ -230,6 +230,4 @@ func newApp() *cli.App {
 		},
 		Version: getVersion(),
 	}
-
-	return app
 }

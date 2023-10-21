@@ -1,0 +1,38 @@
+{{define "subject"}}[hntop] Top HN posts{{end}}
+
+{{define "plainBody"}}
+{{if .FrontPage}}HN posts currently on the front page{{else}}Top {{.ResultCount}} HN posts from {{.StartTime}} to {{.EndTime}}{{end -}}
+{{if .Hits}}
+{{range $i, $e := .Hits}}
+{{increment $i}}. {{.Title}}{{if ne .GetBaseExternalURL ""}} ({{.GetBaseExternalURL}}){{end}}
+{{.GetExternalURL}}
+{{- if ne .GetItemURL .GetExternalURL}}
+{{.GetItemURL}}
+{{- end}}
+{{.Points}} points by {{.Author}} {{timeAgo .CreatedAt}} | {{.NumComments}} comments
+{{end}}
+{{end}}
+{{end}}
+
+{{define "htmlBody"}}
+<!doctype html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+{{if .FrontPage}}HN posts currently on the front page
+{{else}}Top {{.ResultCount}} HN posts from {{.StartTime}} to {{.EndTime}}{{end}}<br><br>
+{{if .Hits}}
+	{{range $i, $e := .Hits}}
+	{{increment $i}}. <a href="{{.GetExternalURL}}">{{.Title}}</a>{{if ne .GetBaseExternalURL ""}} <a href="{{.GetFromURL}}">({{.GetBaseExternalURL}})</a>{{end}}<br>
+	{{.Points}} points by <a href="{{.GetUserURL}}">{{.Author}}</a> {{timeAgo .CreatedAt}} | <a href="{{.GetItemURL}}">{{.NumComments}} comments</a><br><br>
+	{{end}}
+{{end}}
+</body>
+
+</html>
+{{end}}

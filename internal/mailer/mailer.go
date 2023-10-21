@@ -1,11 +1,17 @@
 package mailer
 
 import (
+	"bytes"
+	"embed"
 	"fmt"
+	"text/template"
 	"time"
 
 	"github.com/wneessen/go-mail"
 )
+
+//go:embed "templates"
+var templateFS embed.FS
 
 const (
 	DefaultAuthMechanism = mail.SMTPAuthLogin
@@ -98,6 +104,61 @@ func (m *Mailer) SendString(to, subject, plainBody, htmlBody string) error {
 	msg.Subject(subject)
 	msg.SetBodyString("text/plain", plainBody)
 	msg.AddAlternativeString("text/html", htmlBody)
+
+	fmt.Printf("Sending mail to %s.. ", to)
+	m.sendMsg(msg)
+	if err != nil {
+		return fmt.Errorf("sending mail from string: %w", err)
+	}
+
+	fmt.Print("Done.\n")
+	return nil
+}
+
+func (m *Mailer) SendTemplate(to, templateFile string, templateFuncs template.FuncMap, data any) error {
+	var err error
+
+	msg := mail.NewMsg()
+
+	if err = msg.From(m.From); err != nil {
+		return fmt.Errorf("failed to set mail From address: %w", err)
+	}
+
+	if err = msg.To(to); err != nil {
+		return fmt.Errorf("failed to set mail To address: %w", err)
+	}
+
+	var tmpl *template.Template
+	if templateFuncs != nil {
+		tmpl, err = template.New("email").Funcs(templateFuncs).ParseFS(templateFS, "templates/"+templateFile)
+	} else {
+		tmpl, err = template.New("email").ParseFS(templateFS, "templates/"+templateFile)
+	}
+	if err != nil {
+		return fmt.Errorf("parsing mail template file: %w", err)
+	}
+
+	subject := new(bytes.Buffer)
+	err = tmpl.ExecuteTemplate(subject, "subject", data)
+	if err != nil {
+		return fmt.Errorf("executing mail subject template: %w", err)
+	}
+
+	plainBody := new(bytes.Buffer)
+	err = tmpl.ExecuteTemplate(plainBody, "plainBody", data)
+	if err != nil {
+		return fmt.Errorf("executing mail plainBody template: %w", err)
+	}
+
+	htmlBody := new(bytes.Buffer)
+	err = tmpl.ExecuteTemplate(htmlBody, "htmlBody", data)
+	if err != nil {
+		return fmt.Errorf("executing mail htmlBody template: %w", err)
+	}
+
+	msg.Subject(subject.String())
+	msg.SetBodyString("text/plain", plainBody.String())
+	msg.AddAlternativeString("text/html", htmlBody.String())
 
 	fmt.Printf("Sending mail to %s.. ", to)
 	m.sendMsg(msg)

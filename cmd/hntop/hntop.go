@@ -3,13 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/nilic/hntop-cli/internal/mailer"
 	"github.com/nilic/hntop-cli/pkg/htclient"
 	"github.com/urfave/cli/v2"
-)
-
-const (
-	mailSubject = "[hntop] Top HN posts"
 )
 
 var (
@@ -34,29 +29,9 @@ func execute(cCtx *cli.Context) error {
 		return fmt.Errorf("invoking HN API: %w", err)
 	}
 
-	output, err := h.Output(cCtx.String("output"), q)
+	err = output(cCtx, q, h)
 	if err != nil {
 		return fmt.Errorf("creating output: %w", err)
-	}
-
-	if cCtx.String("output") == "list" {
-		fmt.Print(output)
-	} else {
-		mc, err := mailer.New(cCtx.String("mail-from"),
-			cCtx.String("mail-server"),
-			cCtx.Int("mail-port"),
-			cCtx.String("mail-username"),
-			cCtx.String("mail-password"),
-			cCtx.String("mail-auth"),
-			cCtx.String("mail-tls"))
-		if err != nil {
-			return fmt.Errorf("configuring mail client: %w", err)
-		}
-
-		err = mc.SendString(cCtx.String("mail-to"), mailSubject, "", output)
-		if err != nil {
-			return fmt.Errorf("sending mail: %w", err)
-		}
 	}
 
 	return nil
