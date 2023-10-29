@@ -24,14 +24,30 @@
 </head>
 
 <body>
-{{if .FrontPage}}HN posts currently on the front page
-{{else}}Top {{.ResultCount}} HN posts from {{.StartTime}} to {{.EndTime}}{{end}}<br><br>
+<center><table border="0" cellpadding="0" cellspacing="0" width="85%" bgcolor="#f6f6ef">
+        <tr><td bgcolor="#ff6600"><table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding:2px"><tr>
+                  <td style="line-height:12pt; height:10px;"><span style="font-family:Verdana, Geneva, sans-serif; font-size: 10pt; color:#222222; line-height:12px;"><b style="margin-right: 5px;">{{if .FrontPage}}HN posts currently on the front page
+{{else}}Top {{.ResultCount}} HN posts from {{.StartTime}} to {{.EndTime}}{{end}}</b>
+        	</span></td></tr>
+		</table></td></tr>
 {{if .Hits}}
+<tr title="" style="height:10px"></tr><tr><td><table border="0" cellpadding="0" cellspacing="0">
 	{{range $i, $e := .Hits}}
-	{{increment $i}}. <a href="{{.GetExternalURL}}">{{.Title}}</a>{{if ne .GetBaseExternalURL ""}} <a href="{{.GetFromURL}}">({{.GetBaseExternalURL}})</a>{{end}}<br>
-	{{.Points}} points by <a href="{{.GetUserURL}}">{{.Author}}</a> {{timeAgo .CreatedAt}} | <a href="{{.GetItemURL}}">{{.NumComments}} comments</a><br><br>
+	<tr>
+      <td align="right" valign="top" style="font-family:Verdana, Geneva, sans-serif; font-size: 10pt; color:#828282; overflow:hidden;">{{increment $i}}.</td>    <td style="font-family:Verdana, Geneva, sans-serif; font-size: 10pt; color:#828282; overflow:hidden;">&nbsp;<a href="{{.GetExternalURL}}">{{.Title}}</a>{{if ne .GetBaseExternalURL ""}}<span style="font-family:Verdana, Geneva, sans-serif; font-size:  8pt; color:#828282;"> (<a href="{{.GetFromURL}}">{{.GetBaseExternalURL}}</a>)</span>{{end}}</td></tr><tr><td></td><td style="font-family:Verdana, Geneva, sans-serif; font-size:  7pt; color:#828282;">
+          &nbsp;{{.Points}} points by <a href="{{.GetUserURL}}" class="hnuser">{{.Author}}</a> <span class="age" title="{{.CreatedAt}}">{{timeAgo .CreatedAt}}</span> | <a href="{{.GetItemURL}}">{{.NumComments}} comments</a>
+              </td></tr>
+			  <tr class="smallspacer" style="height:5px"></tr>
 	{{end}}
+<tr class="largespacer"style="height:10px"></tr>
+</table>
+</td></tr>
 {{end}}
+<tr><td><table width="100%" cellspacing="0" cellpadding="1"><tr><td bgcolor="#ff6600"></td></tr></table>
+<center><span style="font-family:Verdana, Geneva, sans-serif; font-size:  8pt; color:#000000;">Powered by <a href="https://github.com/nilic/hntop-cli">hntop-cli</a></span>
+</center></td></tr>
+<tr class="smallspacer" style="height:5px"></tr> 
+</table></center>
 </body>
 
 </html>
