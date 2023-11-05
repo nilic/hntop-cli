@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/nilic/hntop-cli/htclient"
 	"github.com/nilic/hntop-cli/internal/mailer"
-	"github.com/nilic/hntop-cli/pkg/htclient"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/exp/slices"
 )

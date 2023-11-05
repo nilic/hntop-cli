@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/nilic/hntop-cli/pkg/htclient"
+	"github.com/nilic/hntop-cli/htclient"
 	"github.com/urfave/cli/v2"
 )
 
