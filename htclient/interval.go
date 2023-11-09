@@ -32,13 +32,6 @@ type interval struct {
 	LengthSecs int64
 }
 
-func intervaltoSecs(s string) int64 {
-	l, _ := strconv.Atoi(s[:len(s)-1])
-	length := int64(l)
-	unit := s[len(s)-1:]
-	return length * intervals[unit].LengthSecs
-}
-
 func GetIntervalUnits() []string {
 	unitSlice := make([]string, len(intervals))
 
@@ -48,4 +41,11 @@ func GetIntervalUnits() []string {
 		i++
 	}
 	return unitSlice
+}
+
+func intervaltoSecs(s string) int64 {
+	l, _ := strconv.Atoi(s[:len(s)-1])
+	length := int64(l)
+	unit := s[len(s)-1:]
+	return length * intervals[unit].LengthSecs
 }
