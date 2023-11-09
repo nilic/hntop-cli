@@ -36,7 +36,7 @@ func newApp() *cli.App {
 				Name:     "last",
 				Aliases:  []string{"l"},
 				EnvVars:  []string{appNameUpper + "_LAST"},
-				Usage:    "Interval since current time to show top HN posts from, eg. \"12h\" (last 12 hours), \"6m\" (last 6 months).",
+				Usage:    `Interval since current time to show top HN posts from, eg. "12h" (last 12 hours), "6m" (last 6 months).`,
 				Category: "Time interval:",
 				Action: func(cCtx *cli.Context, s string) error {
 					if len(s) == 1 {
@@ -98,7 +98,7 @@ func newApp() *cli.App {
 					tags := strings.Split(s, ",")
 					for _, t := range tags {
 						if !slices.Contains(availableTags, t) {
-							return fmt.Errorf("invalid tag value \"%s\", available tags: %v", t, availableTags)
+							return fmt.Errorf(`invalid tag value "%s", available tags: %v`, t, availableTags)
 						}
 					}
 					return nil
