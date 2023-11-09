@@ -98,7 +98,7 @@ func newApp() *cli.App {
 					tags := strings.Split(s, ",")
 					for _, t := range tags {
 						if !slices.Contains(availableTags, t) {
-							return fmt.Errorf(`invalid tag value "%s", available tags: %v`, t, availableTags)
+							return fmt.Errorf("invalid tag value %q, available tags: %v", t, availableTags)
 						}
 					}
 					return nil

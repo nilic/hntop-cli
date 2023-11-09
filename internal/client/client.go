@@ -19,7 +19,7 @@ type Client struct {
 func NewClient(URL, userAgent string) (*Client, error) {
 	u, err := url.Parse(URL)
 	if err != nil {
-		return nil, fmt.Errorf("parsing URL %s: %w", URL, err)
+		return nil, fmt.Errorf("parsing URL %q: %w", URL, err)
 	}
 
 	c := &Client{
@@ -36,7 +36,7 @@ func NewClient(URL, userAgent string) (*Client, error) {
 func (c *Client) NewRequest(httpMethod string, headers map[string]string, body io.Reader) (*http.Request, error) {
 	regex := regexp.MustCompile(`^(GET|POST|PUT|PATCH|DELETE)$`)
 	if !regex.MatchString(httpMethod) {
-		return nil, fmt.Errorf("invalid HTTP method: %s", httpMethod)
+		return nil, fmt.Errorf("invalid HTTP method: %q", httpMethod)
 	}
 
 	req, err := http.NewRequest(httpMethod, c.URL.String(), body)
@@ -62,7 +62,7 @@ func (c *Client) Do(req *http.Request, v any) error {
 	}
 
 	if res == nil {
-		return fmt.Errorf("empty response from %s", req.URL.RequestURI())
+		return fmt.Errorf("empty response from %q", req.URL.RequestURI())
 	}
 
 	responseBody, err := io.ReadAll(res.Body)
@@ -73,13 +73,13 @@ func (c *Client) Do(req *http.Request, v any) error {
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("calling %s:\nstatus: %s\nresponseData: %s", req.URL.RequestURI(), res.Status, responseBody)
+		return fmt.Errorf("calling %q:\nstatus: %q\nresponseData: %q", req.URL.RequestURI(), res.Status, responseBody)
 	}
 
 	err = json.Unmarshal(responseBody, v)
 
 	if err != nil {
-		return fmt.Errorf("reading response from %s %s: %w", req.Method, req.URL.RequestURI(), err)
+		return fmt.Errorf(`reading response from "%s %s": %w`, req.Method, req.URL.RequestURI(), err)
 	}
 
 	return nil

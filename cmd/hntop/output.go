@@ -77,7 +77,7 @@ func output(cCtx *cli.Context, q *htclient.Query, h *htclient.Hits) error {
 
 		return nil
 	default:
-		return fmt.Errorf("unknown output type: %s", cCtx.String("output"))
+		return fmt.Errorf("unknown output type: %q", cCtx.String("output"))
 	}
 }
 
