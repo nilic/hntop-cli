@@ -29,8 +29,7 @@ func execute(cCtx *cli.Context) error {
 		return fmt.Errorf("invoking HN API: %w", err)
 	}
 
-	err = output(cCtx, q, h)
-	if err != nil {
+	if err := output(cCtx, q, h); err != nil {
 		return fmt.Errorf("creating output: %w", err)
 	}
 

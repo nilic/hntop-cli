@@ -70,8 +70,7 @@ func output(cCtx *cli.Context, q *htclient.Query, h *htclient.Hits) error {
 			return fmt.Errorf("configuring mail client: %w", err)
 		}
 
-		err = mc.SendTemplate(cCtx.String("mail-to"), "hntop.tmpl", templateFuncs, td)
-		if err != nil {
+		if err := mc.SendTemplate(cCtx.String("mail-to"), "hntop.tmpl", templateFuncs, td); err != nil {
 			return fmt.Errorf("sending mail: %w", err)
 		}
 
@@ -88,8 +87,7 @@ func outputList(td templateData) (string, error) {
 	}
 
 	buf := new(bytes.Buffer)
-	err = t.ExecuteTemplate(buf, "list", td)
-	if err != nil {
+	if err := t.ExecuteTemplate(buf, "list", td); err != nil {
 		return "", fmt.Errorf("executing template: %w", err)
 	}
 

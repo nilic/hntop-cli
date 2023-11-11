@@ -76,9 +76,7 @@ func (c *Client) Do(req *http.Request, v any) error {
 		return fmt.Errorf("calling %q:\nstatus: %q\nresponseData: %q", req.URL.RequestURI(), res.Status, responseBody)
 	}
 
-	err = json.Unmarshal(responseBody, v)
-
-	if err != nil {
+	if err := json.Unmarshal(responseBody, v); err != nil {
 		return fmt.Errorf(`reading response from "%s %s": %w`, req.Method, req.URL.RequestURI(), err)
 	}
 
@@ -97,8 +95,7 @@ func MakeHTTPRequest[T any](httpMethod, URL, userAgent string, headers map[strin
 	}
 
 	var response T
-	err = c.Do(req, &response)
-	if err != nil {
+	if err := c.Do(req, &response); err != nil {
 		return responseType, fmt.Errorf("calling API: %w", err)
 	}
 

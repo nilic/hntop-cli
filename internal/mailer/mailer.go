@@ -89,15 +89,13 @@ func New(from, server string, port int, username, password, auth, tls string) (*
 }
 
 func (m *Mailer) SendString(to, subject, plainBody, htmlBody string) error {
-	var err error
-
 	msg := mail.NewMsg()
 
-	if err = msg.From(m.From); err != nil {
+	if err := msg.From(m.From); err != nil {
 		return fmt.Errorf("failed to set mail From address: %w", err)
 	}
 
-	if err = msg.To(to); err != nil {
+	if err := msg.To(to); err != nil {
 		return fmt.Errorf("failed to set mail To address: %w", err)
 	}
 
@@ -106,8 +104,7 @@ func (m *Mailer) SendString(to, subject, plainBody, htmlBody string) error {
 	msg.AddAlternativeString("text/html", htmlBody)
 
 	fmt.Printf("Sending mail to %s.. ", to)
-	m.sendMsg(msg)
-	if err != nil {
+	if err := m.sendMsg(msg); err != nil {
 		return fmt.Errorf("sending mail from string: %w", err)
 	}
 
@@ -116,43 +113,33 @@ func (m *Mailer) SendString(to, subject, plainBody, htmlBody string) error {
 }
 
 func (m *Mailer) SendTemplate(to, templateFile string, templateFuncs template.FuncMap, data any) error {
-	var err error
-
 	msg := mail.NewMsg()
 
-	if err = msg.From(m.From); err != nil {
+	if err := msg.From(m.From); err != nil {
 		return fmt.Errorf("failed to set mail From address: %w", err)
 	}
 
-	if err = msg.To(to); err != nil {
+	if err := msg.To(to); err != nil {
 		return fmt.Errorf("failed to set mail To address: %w", err)
 	}
 
-	var tmpl *template.Template
-	if templateFuncs != nil {
-		tmpl, err = template.New("email").Funcs(templateFuncs).ParseFS(templateFS, "templates/"+templateFile)
-	} else {
-		tmpl, err = template.New("email").ParseFS(templateFS, "templates/"+templateFile)
-	}
+	tmpl, err := template.New("email").Funcs(templateFuncs).ParseFS(templateFS, "templates/"+templateFile)
 	if err != nil {
 		return fmt.Errorf("parsing mail template file: %w", err)
 	}
 
 	subject := new(bytes.Buffer)
-	err = tmpl.ExecuteTemplate(subject, "subject", data)
-	if err != nil {
+	if err := tmpl.ExecuteTemplate(subject, "subject", data); err != nil {
 		return fmt.Errorf("executing mail subject template: %w", err)
 	}
 
 	plainBody := new(bytes.Buffer)
-	err = tmpl.ExecuteTemplate(plainBody, "plainBody", data)
-	if err != nil {
+	if err := tmpl.ExecuteTemplate(plainBody, "plainBody", data); err != nil {
 		return fmt.Errorf("executing mail plainBody template: %w", err)
 	}
 
 	htmlBody := new(bytes.Buffer)
-	err = tmpl.ExecuteTemplate(htmlBody, "htmlBody", data)
-	if err != nil {
+	if err := tmpl.ExecuteTemplate(htmlBody, "htmlBody", data); err != nil {
 		return fmt.Errorf("executing mail htmlBody template: %w", err)
 	}
 
@@ -161,8 +148,7 @@ func (m *Mailer) SendTemplate(to, templateFile string, templateFuncs template.Fu
 	msg.AddAlternativeString("text/html", htmlBody.String())
 
 	fmt.Printf("Sending mail to %s.. ", to)
-	m.sendMsg(msg)
-	if err != nil {
+	if err := m.sendMsg(msg); err != nil {
 		return fmt.Errorf("sending mail from string: %w", err)
 	}
 
