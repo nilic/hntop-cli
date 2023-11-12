@@ -98,7 +98,7 @@ func (c *client) do(req *http.Request, v any) error {
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("calling %q:\nstatus: %q\nresponseData: %q", req.URL.RequestURI(), res.Status, responseBody)
+		return fmt.Errorf(`calling "%s %s":\nstatus: %q\nresponse body: %q`, req.Method, req.URL.RequestURI(), res.Status, responseBody)
 	}
 
 	if err := json.Unmarshal(responseBody, v); err != nil {
