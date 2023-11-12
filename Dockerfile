@@ -1,5 +1,5 @@
 # builder image
-FROM golang:1.19-alpine3.18 as builder
+FROM golang:1.21-alpine3.18 as builder
 ARG BUILD_VERSION
 LABEL org.opencontainers.image.source="https://github.com/nilic/hntop-cli"
 RUN mkdir /build
