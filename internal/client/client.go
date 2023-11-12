@@ -16,12 +16,6 @@ type Options struct {
 	Body      io.Reader
 }
 
-type client struct {
-	url        *url.URL
-	userAgent  string
-	httpClient *http.Client
-}
-
 func MakeHTTPRequest[T any](httpMethod, URL string, opts *Options, responseType T) (T, error) {
 	c, err := newClient(URL, opts.UserAgent)
 	if err != nil {
@@ -39,6 +33,12 @@ func MakeHTTPRequest[T any](httpMethod, URL string, opts *Options, responseType 
 	}
 
 	return response, nil
+}
+
+type client struct {
+	url        *url.URL
+	userAgent  string
+	httpClient *http.Client
 }
 
 func newClient(URL, userAgent string) (*client, error) {
