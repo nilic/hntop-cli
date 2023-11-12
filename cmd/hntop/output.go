@@ -3,7 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
-	tt "text/template"
+	"text/template"
 	"time"
 
 	"github.com/nilic/hntop-cli/htclient"
@@ -26,7 +26,7 @@ const (
 {{end}}`
 )
 
-var templateFuncs = tt.FuncMap{
+var templateFuncs = template.FuncMap{
 	"increment": increment,
 	"timeAgo":   timeAgo,
 }
@@ -81,7 +81,7 @@ func output(cCtx *cli.Context, q *htclient.Query, h *htclient.Hits) error {
 }
 
 func outputList(td templateData) (string, error) {
-	t, err := tt.New("list").Funcs(templateFuncs).Parse(listTemplate)
+	t, err := template.New("list").Funcs(templateFuncs).Parse(listTemplate)
 	if err != nil {
 		return "", fmt.Errorf("creating template: %w", err)
 	}
