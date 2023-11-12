@@ -47,7 +47,7 @@ func newApp() *cli.App {
 						return fmt.Errorf("invalid interval length, needs to be in format <number><unit>, eg. 12h for 12 hours or 6m for 6 months")
 					}
 					last := s[len(s)-1:]
-					units := htclient.GetIntervalUnits()
+					units := htclient.IntervalUnits()
 					if !slices.Contains(units, last) {
 						return fmt.Errorf("invalid interval unit, must end in one of %v", units)
 					}

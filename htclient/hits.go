@@ -29,23 +29,23 @@ type Hits struct {
 	HitsPerPage int   `json:"hitsPerPage"`
 }
 
-func (h Hit) GetItemURL() string {
+func (h Hit) ItemURL() string {
 	return itemBaseURL + h.ObjectID
 }
 
-func (h Hit) GetExternalURL() string {
+func (h Hit) ExternalURL() string {
 	if h.URL != "" {
 		return h.URL
 	}
 
-	return h.GetItemURL()
+	return h.ItemURL()
 }
 
-func (h Hit) GetUserURL() string {
+func (h Hit) UserURL() string {
 	return userBaseURL + h.Author
 }
 
-func (h Hit) GetBaseExternalURL() string {
+func (h Hit) BaseExternalURL() string {
 	if h.URL == "" {
 		return ""
 	}
@@ -58,8 +58,8 @@ func (h Hit) GetBaseExternalURL() string {
 	return u.Hostname()
 }
 
-func (h Hit) GetFromURL() string {
-	b := h.GetBaseExternalURL()
+func (h Hit) FromURL() string {
+	b := h.BaseExternalURL()
 
 	if b == "" {
 		return ""

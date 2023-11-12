@@ -16,10 +16,10 @@ const (
 	listTemplate = `{{if .FrontPage}}Displaying HN posts currently on the front page{{else}}Displaying top {{.ResultCount}} HN posts from {{.StartTime}} to {{.EndTime}}{{end -}}
 {{if .Hits}}
 {{range $i, $e := .Hits}}
-{{increment $i}}. {{.Title}}{{if ne .GetBaseExternalURL ""}} ({{.GetBaseExternalURL}}){{end}}
-{{.GetExternalURL}}
-{{- if ne .GetItemURL .GetExternalURL}}
-{{.GetItemURL}}
+{{increment $i}}. {{.Title}}{{if ne .BaseExternalURL ""}} ({{.BaseExternalURL}}){{end}}
+{{.ExternalURL}}
+{{- if ne .ItemURL .ExternalURL}}
+{{.ItemURL}}
 {{- end}}
 {{.Points}} points by {{.Author}} {{timeAgo .CreatedAt}} | {{.NumComments}} comments
 {{end}}

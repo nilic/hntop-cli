@@ -4,10 +4,10 @@
 {{if .FrontPage}}HN posts currently on the front page{{else}}Top {{.ResultCount}} HN posts from {{.StartTime}} to {{.EndTime}}{{end -}}
 {{if .Hits}}
 {{range $i, $e := .Hits}}
-{{increment $i}}. {{.Title}}{{if ne .GetBaseExternalURL ""}} ({{.GetBaseExternalURL}}){{end}}
-{{.GetExternalURL}}
-{{- if ne .GetItemURL .GetExternalURL}}
-{{.GetItemURL}}
+{{increment $i}}. {{.Title}}{{if ne .BaseExternalURL ""}} ({{.BaseExternalURL}}){{end}}
+{{.ExternalURL}}
+{{- if ne .ItemURL .ExternalURL}}
+{{.ItemURL}}
 {{- end}}
 {{.Points}} points by {{.Author}} {{timeAgo .CreatedAt}} | {{.NumComments}} comments
 {{end}}
@@ -34,8 +34,8 @@
 <tr title="" style="height:10px"></tr><tr><td><table border="0" cellpadding="0" cellspacing="0">
 	{{range $i, $e := .Hits}}
 	<tr>
-      <td align="right" valign="top" style="font-family:Verdana, Geneva, sans-serif; font-size: 10pt; color:#828282; overflow:hidden;">{{increment $i}}.</td>    <td style="font-family:Verdana, Geneva, sans-serif; font-size: 10pt; color:#828282; overflow:hidden;">&nbsp;<a href="{{.GetExternalURL}}">{{.Title}}</a>{{if ne .GetBaseExternalURL ""}}<span style="font-family:Verdana, Geneva, sans-serif; font-size:  8pt; color:#828282;"> (<a href="{{.GetFromURL}}">{{.GetBaseExternalURL}}</a>)</span>{{end}}</td></tr><tr><td></td><td style="font-family:Verdana, Geneva, sans-serif; font-size:  7pt; color:#828282;">
-          &nbsp;{{.Points}} points by <a href="{{.GetUserURL}}" class="hnuser">{{.Author}}</a> <span class="age" title="{{.CreatedAt}}">{{timeAgo .CreatedAt}}</span> | <a href="{{.GetItemURL}}">{{.NumComments}} comments</a>
+      <td align="right" valign="top" style="font-family:Verdana, Geneva, sans-serif; font-size: 10pt; color:#828282; overflow:hidden;">{{increment $i}}.</td>    <td style="font-family:Verdana, Geneva, sans-serif; font-size: 10pt; color:#828282; overflow:hidden;">&nbsp;<a href="{{.ExternalURL}}">{{.Title}}</a>{{if ne .BaseExternalURL ""}}<span style="font-family:Verdana, Geneva, sans-serif; font-size:  8pt; color:#828282;"> (<a href="{{.FromURL}}">{{.BaseExternalURL}}</a>)</span>{{end}}</td></tr><tr><td></td><td style="font-family:Verdana, Geneva, sans-serif; font-size:  7pt; color:#828282;">
+          &nbsp;{{.Points}} points by <a href="{{.UserURL}}" class="hnuser">{{.Author}}</a> <span class="age" title="{{.CreatedAt}}">{{timeAgo .CreatedAt}}</span> | <a href="{{.ItemURL}}">{{.NumComments}} comments</a>
               </td></tr>
 			  <tr class="smallspacer" style="height:5px"></tr>
 	{{end}}

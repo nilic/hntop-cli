@@ -32,7 +32,7 @@ type interval struct {
 	LengthSecs int64
 }
 
-func GetIntervalUnits() []string {
+func IntervalUnits() []string {
 	unitSlice := make([]string, len(intervals))
 
 	i := 0
