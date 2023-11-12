@@ -6,30 +6,30 @@ import (
 
 var intervals = map[string]interval{
 	"h": {
-		Unit:       "hour",
-		LengthSecs: 60 * 60,
+		unit:       "hour",
+		lengthSecs: 60 * 60,
 	},
 	"d": {
-		Unit:       "day",
-		LengthSecs: 60 * 60 * 24,
+		unit:       "day",
+		lengthSecs: 60 * 60 * 24,
 	},
 	"w": {
-		Unit:       "week",
-		LengthSecs: 60 * 60 * 24 * 7,
+		unit:       "week",
+		lengthSecs: 60 * 60 * 24 * 7,
 	},
 	"m": {
-		Unit:       "month",
-		LengthSecs: 60 * 60 * 24 * 30,
+		unit:       "month",
+		lengthSecs: 60 * 60 * 24 * 30,
 	},
 	"y": {
-		Unit:       "year",
-		LengthSecs: 60 * 60 * 24 * 365,
+		unit:       "year",
+		lengthSecs: 60 * 60 * 24 * 365,
 	},
 }
 
 type interval struct {
-	Unit       string
-	LengthSecs int64
+	unit       string
+	lengthSecs int64
 }
 
 func IntervalUnits() []string {
@@ -47,5 +47,5 @@ func intervaltoSecs(s string) int64 {
 	l, _ := strconv.Atoi(s[:len(s)-1])
 	length := int64(l)
 	unit := s[len(s)-1:]
-	return length * intervals[unit].LengthSecs
+	return length * intervals[unit].lengthSecs
 }
