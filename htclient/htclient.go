@@ -24,7 +24,7 @@ func NewClient(query, userAgent string) *HTClient {
 
 func (c *HTClient) Do() (*Hits, error) {
 	var h Hits
-	h, err := client.MakeHTTPRequest("GET", c.URL, c.UserAgent, nil, nil, h)
+	h, err := client.MakeHTTPRequest("GET", c.URL, &client.Options{UserAgent: c.UserAgent}, h)
 	if err != nil {
 		return nil, fmt.Errorf("calling HN API: %w", err)
 	}

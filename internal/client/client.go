@@ -10,21 +10,46 @@ import (
 	"time"
 )
 
-type Client struct {
-	URL        *url.URL
-	UserAgent  string
+type Options struct {
+	UserAgent string
+	Headers   map[string]string
+	Body      io.Reader
+}
+
+type client struct {
+	url        *url.URL
+	userAgent  string
 	httpClient *http.Client
 }
 
-func NewClient(URL, userAgent string) (*Client, error) {
+func MakeHTTPRequest[T any](httpMethod, URL string, opts *Options, responseType T) (T, error) {
+	c, err := newClient(URL, opts.UserAgent)
+	if err != nil {
+		return responseType, fmt.Errorf("creating API client: %w", err)
+	}
+
+	req, err := c.newRequest(httpMethod, opts.Headers, opts.Body)
+	if err != nil {
+		return responseType, fmt.Errorf("creating API request: %w", err)
+	}
+
+	var response T
+	if err := c.do(req, &response); err != nil {
+		return responseType, fmt.Errorf("calling API: %w", err)
+	}
+
+	return response, nil
+}
+
+func newClient(URL, userAgent string) (*client, error) {
 	u, err := url.Parse(URL)
 	if err != nil {
 		return nil, fmt.Errorf("parsing URL %q: %w", URL, err)
 	}
 
-	c := &Client{
-		URL:       u,
-		UserAgent: userAgent,
+	c := &client{
+		url:       u,
+		userAgent: userAgent,
 		httpClient: &http.Client{
 			Timeout: time.Second * 10,
 		},
@@ -33,19 +58,19 @@ func NewClient(URL, userAgent string) (*Client, error) {
 	return c, nil
 }
 
-func (c *Client) NewRequest(httpMethod string, headers map[string]string, body io.Reader) (*http.Request, error) {
+func (c *client) newRequest(httpMethod string, headers map[string]string, body io.Reader) (*http.Request, error) {
 	regex := regexp.MustCompile(`^(GET|POST|PUT|PATCH|DELETE)$`)
 	if !regex.MatchString(httpMethod) {
 		return nil, fmt.Errorf("invalid HTTP method: %q", httpMethod)
 	}
 
-	req, err := http.NewRequest(httpMethod, c.URL.String(), body)
+	req, err := http.NewRequest(httpMethod, c.url.String(), body)
 	if err != nil {
 		return nil, fmt.Errorf("creating API request: %w", err)
 	}
 
-	if c.UserAgent != "" {
-		req.Header.Set("User-Agent", c.UserAgent)
+	if c.userAgent != "" {
+		req.Header.Set("User-Agent", c.userAgent)
 	}
 
 	for k, v := range headers {
@@ -55,7 +80,7 @@ func (c *Client) NewRequest(httpMethod string, headers map[string]string, body i
 	return req, nil
 }
 
-func (c *Client) Do(req *http.Request, v any) error {
+func (c *client) do(req *http.Request, v any) error {
 	res, err := c.httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("invoking API: %w", err)
@@ -81,23 +106,4 @@ func (c *Client) Do(req *http.Request, v any) error {
 	}
 
 	return nil
-}
-
-func MakeHTTPRequest[T any](httpMethod, URL, userAgent string, headers map[string]string, body io.Reader, responseType T) (T, error) {
-	c, err := NewClient(URL, userAgent)
-	if err != nil {
-		return responseType, fmt.Errorf("creating API client: %w", err)
-	}
-
-	req, err := c.NewRequest(httpMethod, headers, body)
-	if err != nil {
-		return responseType, fmt.Errorf("creating API request: %w", err)
-	}
-
-	var response T
-	if err := c.Do(req, &response); err != nil {
-		return responseType, fmt.Errorf("calling API: %w", err)
-	}
-
-	return response, nil
 }
