@@ -28,6 +28,7 @@ const (
 
 var templateFuncs = template.FuncMap{
 	"increment": increment,
+	"mod":       mod,
 	"timeAgo":   timeAgo,
 }
 
@@ -36,15 +37,18 @@ type templateData struct {
 	ResultCount int
 	StartTime   string
 	EndTime     string
+	Christmas   bool
 	Hits        []htclient.Hit
 }
 
 func output(cCtx *cli.Context, q *htclient.Query, h *htclient.Hits) error {
+	t := time.Now()
 	var td = templateData{
 		FrontPage:   q.FrontPage,
 		ResultCount: q.ResultCount,
 		StartTime:   (time.Unix(q.StartTime, 0)).Format(time.RFC822),
 		EndTime:     (time.Unix(q.EndTime, 0)).Format(time.RFC822),
+		Christmas:   t.Month().String() == "December" && t.Day() == 25,
 		Hits:        h.Hits,
 	}
 
@@ -96,6 +100,10 @@ func outputList(td templateData) (string, error) {
 
 func increment(i int) int {
 	return i + 1
+}
+
+func mod(i, j int) bool {
+	return i%j == 0
 }
 
 func timeAgo(t time.Time) string {
