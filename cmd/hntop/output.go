@@ -28,6 +28,7 @@ const (
 
 var templateFuncs = template.FuncMap{
 	"increment": increment,
+	"mod":       mod,
 	"timeAgo":   timeAgo,
 }
 
@@ -99,6 +100,10 @@ func outputList(td templateData) (string, error) {
 
 func increment(i int) int {
 	return i + 1
+}
+
+func mod(i, j int) bool {
+	return i%j == 0
 }
 
 func timeAgo(t time.Time) string {
