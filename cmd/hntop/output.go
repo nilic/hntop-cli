@@ -36,15 +36,18 @@ type templateData struct {
 	ResultCount int
 	StartTime   string
 	EndTime     string
+	Christmas   bool
 	Hits        []htclient.Hit
 }
 
 func output(cCtx *cli.Context, q *htclient.Query, h *htclient.Hits) error {
+	t := time.Now()
 	var td = templateData{
 		FrontPage:   q.FrontPage,
 		ResultCount: q.ResultCount,
 		StartTime:   (time.Unix(q.StartTime, 0)).Format(time.RFC822),
 		EndTime:     (time.Unix(q.EndTime, 0)).Format(time.RFC822),
+		Christmas:   t.Month().String() == "December" && t.Day() == 25,
 		Hits:        h.Hits,
 	}
 
