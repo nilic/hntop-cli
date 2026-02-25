@@ -2,6 +2,7 @@ package htclient
 
 import (
 	"fmt"
+	"net/url"
 	"time"
 )
 
@@ -34,9 +35,10 @@ func NewQuery(qp QueryParams) *Query {
 	if qp.FrontPage {
 		q.FrontPage = true
 		q.ResultCount = frontPagePostCount
-		q.Query = queryPrefix +
-			"tags=front_page" +
-			fmt.Sprintf("&hitsPerPage=%d", q.ResultCount)
+		params := url.Values{}
+		params.Set("tags", "front_page")
+		params.Set("hitsPerPage", fmt.Sprintf("%d", q.ResultCount))
+		q.Query = queryPrefix + params.Encode()
 		return &q
 	}
 
@@ -66,10 +68,11 @@ func NewQuery(qp QueryParams) *Query {
 	q.Tags = qp.Tags
 	q.ResultCount = qp.Count
 
-	q.Query = queryPrefix +
-		fmt.Sprintf("numericFilters=created_at_i>%d,created_at_i<%d", q.StartTime, q.EndTime) +
-		fmt.Sprintf("&hitsPerPage=%d", q.ResultCount) +
-		fmt.Sprintf("&tags=(%s)", q.Tags)
+	params := url.Values{}
+	params.Set("numericFilters", fmt.Sprintf("created_at_i>%d,created_at_i<%d", q.StartTime, q.EndTime))
+	params.Set("hitsPerPage", fmt.Sprintf("%d", q.ResultCount))
+	params.Set("tags", fmt.Sprintf("(%s)", q.Tags))
+	q.Query = queryPrefix + params.Encode()
 
 	return &q
 }
